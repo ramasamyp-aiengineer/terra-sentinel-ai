@@ -273,10 +273,11 @@ def s01_team(slide):
         return
 
     # Restore template geometry if a prior build collapsed the shape
+    # Tall enough for copy, bottom stays above footer (~5.09M)
     target.left = 146_600
-    target.top = 2_850_000  # just under Cup hero art
+    target.top = 2_850_000
     target.width = 8_760_000
-    target.height = 1_450_000  # ends ~4.30M — well clear of footer at 5.09M
+    target.height = 1_900_000  # ends 4.75M
 
     tf = target.text_frame
     tf.clear()
@@ -286,21 +287,19 @@ def s01_team(slide):
         tf.vertical_anchor = MSO_ANCHOR.TOP
     except Exception:
         pass
+    # Compact — no blank spacer paragraphs (they overflow the box)
     rows = [
-        ("TEAM DETAILS  ·  AI BUILDER CUP 2026  ·  JAPAC  ·  SUSTAINABILITY", 11, True, BRAND),
-        ("", 6, False, MUTED),
-        ("Team: Agent Ram   ·   Leader: Ramasamy P   ·   Product: TerraSentinel AI", 14, True, INK),
-        ("", 8, False, MUTED),
-        ("Satellites leave 1,355 moving points. The engine ranks the few that matter.", 13, True, BRAND),
-        ("Gemini writes the ticket — every number checked. Live on Cloud Run + BigQuery.", 13, True, BRAND),
-        ("", 8, False, MUTED),
-        ("Problem: InSAR portals give points, not who goes today. Chatbots invent mm.", 12, False, INK),
-        ("Solution: 250 m sites · RPI · honest ETA bands · Gemini number guard.", 12, False, INK),
+        ("TEAM DETAILS  ·  AI BUILDER CUP 2026  ·  JAPAC  ·  SUSTAINABILITY", 10, True, BRAND),
+        ("Team: Agent Ram   ·   Leader: Ramasamy P   ·   Product: TerraSentinel AI", 13, True, INK),
+        ("Satellites leave 1,355 moving points. The engine ranks the few that matter.", 12, True, BRAND),
+        ("Gemini writes the ticket — every number checked. Live on Cloud Run + BigQuery.", 12, True, BRAND),
+        ("Problem: InSAR portals give points, not who goes today. Chatbots invent mm.", 11, False, INK),
+        ("Solution: 250 m sites · RPI · honest ETA bands · Gemini number guard.", 11, False, INK),
     ]
     for i, (t, size, bold, color) in enumerate(rows):
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-        p.space_after = Pt(2)
         p.space_before = Pt(0)
+        p.space_after = Pt(6 if i < 4 else 4)
         run = p.add_run()
         run.text = t
         run.font.size = Pt(size)
