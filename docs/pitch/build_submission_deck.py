@@ -241,34 +241,67 @@ def grid(cols: int, rows: int, gap: int = GAP):
 
 
 def s01_team(slide):
-    """Short copy in a box we control — never under the Cup footer."""
-    for sh in list(slide.shapes):
-        if sh.has_text_frame and ("Team" in sh.text_frame.text or "Problem" in sh.text_frame.text or "TEAM" in sh.text_frame.text):
-            try:
-                sh.text_frame.clear()
-            except Exception:
-                pass
-            # Hide template box so our positioned box is the only content
-            try:
-                sh.width = 1
-                sh.height = 1
-            except Exception:
-                pass
+    """Fill the Cup team box near the top of the white band — nothing under footer."""
+    # Template white text shape sits at ~2.90M; keep that position, shorten height.
+    target = None
+    for sh in slide.shapes:
+        if not sh.has_text_frame:
+            continue
+        # Prefer the Cup placeholder (was shrunk to 1×1 on prior builds) or any team text
+        name = (sh.name or "").lower()
+        body = sh.text_frame.text or ""
+        if "google shape;54" in name or "Team" in body or "TEAM" in body or "Problem" in body:
+            target = sh
+            break
+        if sh.top and 2_700_000 < sh.top < 3_300_000 and sh.width and sh.width > 1_000_000:
+            target = sh
+            break
 
-    # Safe white band under the Cup hero art (~3.05M–4.85M)
-    box_top = 3_120_000
-    box_h = FOOTER_TOP - box_top - 80_000
-    text(slide, MARGIN_X + 80_000, box_top, CONTENT_W - 160_000, box_h, [
+    if target is None:
+        # Fallback: add our own box high in the white band
+        text(slide, 146_600, 2_920_000, 8_760_000, 1_700_000, [
+            ("TEAM DETAILS  ·  AI BUILDER CUP 2026  ·  JAPAC  ·  SUSTAINABILITY", 11, True, BRAND),
+            ("", 6, False, MUTED),
+            ("Team: Agent Ram   ·   Leader: Ramasamy P   ·   Product: TerraSentinel AI", 14, True, INK),
+            ("", 8, False, MUTED),
+            ("Satellites leave 1,355 moving points. The engine ranks the few that matter.", 13, True, BRAND),
+            ("Gemini writes the ticket — every number checked. Live on Cloud Run + BigQuery.", 13, True, BRAND),
+            ("", 8, False, MUTED),
+            ("Problem: InSAR portals give points, not who goes today. Chatbots invent mm.", 12, False, INK),
+            ("Solution: 250 m sites · RPI · honest ETA bands · Gemini number guard.", 12, False, INK),
+        ])
+        return
+
+    # Restore template geometry if a prior build collapsed the shape
+    target.left = 146_600
+    target.top = 2_920_000
+    target.width = 8_760_000
+    target.height = 1_700_000  # ends ~4.62M — clear of footer at 5.09M
+
+    tf = target.text_frame
+    tf.clear()
+    tf.word_wrap = True
+    rows = [
         ("TEAM DETAILS  ·  AI BUILDER CUP 2026  ·  JAPAC  ·  SUSTAINABILITY", 11, True, BRAND),
-        ("", 8, False, MUTED),
+        ("", 6, False, MUTED),
         ("Team: Agent Ram   ·   Leader: Ramasamy P   ·   Product: TerraSentinel AI", 14, True, INK),
-        ("", 10, False, MUTED),
+        ("", 8, False, MUTED),
         ("Satellites leave 1,355 moving points. The engine ranks the few that matter.", 13, True, BRAND),
         ("Gemini writes the ticket — every number checked. Live on Cloud Run + BigQuery.", 13, True, BRAND),
-        ("", 10, False, MUTED),
+        ("", 8, False, MUTED),
         ("Problem: InSAR portals give points, not who goes today. Chatbots invent mm.", 12, False, INK),
         ("Solution: 250 m sites · RPI · honest ETA bands · Gemini number guard.", 12, False, INK),
-    ])
+    ]
+    for i, (t, size, bold, color) in enumerate(rows):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        p.space_after = Pt(2)
+        p.space_before = Pt(0)
+        run = p.add_run()
+        run.text = t
+        run.font.size = Pt(size)
+        run.font.bold = bold
+        run.font.color.rgb = color
+        run.font.name = "Calibri"
 
 
 def s02_cover(slide):
