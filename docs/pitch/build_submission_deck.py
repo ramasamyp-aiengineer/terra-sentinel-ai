@@ -246,20 +246,38 @@ def s01_team(slide):
             tf = sh.text_frame
             tf.clear()
             rows = [
-                ("TEAM DETAILS  ·  AI BUILDER CUP 2026  ·  JAPAC  ·  SUSTAINABILITY", 10, True, BRAND),
-                ("", 4, False, MUTED),
-                ("Team name:  Agent Ram", 15, True, INK),
-                ("Team leader:  Ramasamy P", 13, False, INK),
-                ("Product:  TerraSentinel AI — ground-motion early warning", 12, True, BRAND),
-                ("", 4, False, MUTED),
+                ("TEAM DETAILS  ·  GOOGLE CLOUD AI BUILDER CUP 2026  ·  JAPAC  ·  SUSTAINABILITY", 9, True, BRAND),
+                ("", 3, False, MUTED),
+                ("Team: Agent Ram     Leader: Ramasamy P     Product: TerraSentinel AI", 13, True, INK),
+                ("", 3, False, MUTED),
                 (
-                    "Problem: After each Sentinel-1 pass, operators face thousands of InSAR points with no "
-                    "consequence ranking. TerraSentinel cuts motion into 250 m sites, ranks who inspects "
-                    "today (RPI), reports honest time-to-threshold bands (never failure dates), and uses "
-                    "Gemini to draft a number-verified inspection ticket.",
+                    "WINNING LINE: Satellites leave 1,355 moving points. The engine ranks the few that matter. "
+                    "Gemini writes the inspection ticket — every number checked against tools.",
                     11,
+                    True,
+                    BRAND,
+                ),
+                ("", 3, False, MUTED),
+                (
+                    "Problem: After each Sentinel-1 pass, operators get thousands of InSAR points with no "
+                    "consequence ranking and no “who goes today”. Rain alarms and chatbots either false-fire "
+                    "or invent millimetres and failure dates.",
+                    10,
                     False,
                     INK,
+                ),
+                (
+                    "Solution: 250 m sites · RPI (hazard×consequence×confidence) · honest ETA bands "
+                    "(never failure dates) · Gemini number guard · live on Cloud Run + BigQuery.",
+                    10,
+                    False,
+                    INK,
+                ),
+                (
+                    "Live: https://terrasentinel-598899050820.asia-southeast1.run.app  ·  credentials on login page",
+                    10,
+                    True,
+                    BRAND,
                 ),
             ]
             for i, (t, size, bold, color) in enumerate(rows):
@@ -275,8 +293,7 @@ def s01_team(slide):
 
 
 def s02_cover(slide):
-    """Slide 2 template is dark — cover it with a light story panel (unified teal palette)."""
-    # Hide / blank any leftover instruction text (low-contrast grey on black)
+    """Winning cover: story + proof + hero map (light panel over dark template)."""
     for sh in slide.shapes:
         if sh.has_text_frame and sh.top and 800_000 < sh.top < 4_000_000:
             try:
@@ -284,167 +301,182 @@ def s02_cover(slide):
             except Exception:
                 pass
 
-    # Full light story panel over the dark art (keeps Google chrome if any)
-    panel_y = 420_000
-    panel_h = FOOTER_TOP - panel_y - 30_000
+    panel_y = 380_000
+    panel_h = FOOTER_TOP - panel_y - 20_000
     card(slide, MARGIN_X, panel_y, CONTENT_W, panel_h, WHITE, LINE, BRAND)
 
-    text(slide, MARGIN_X + 100_000, panel_y + 80_000, CONTENT_W - 200_000, 700_000, [
-        ("TERRASENTINEL AI  ·  STORY", 9, True, BRAND),
-        ("Satellites see the ground move. Gemini tells engineers where to go first.", 16, True, INK),
-        ("", 4, False, MUTED),
-        (
-            "Each Sentinel-1 pass → ranked Act list → honest threshold band (never a failure date) → number-verified ticket.",
-            11,
-            False,
-            MUTED,
-        ),
+    left_w = int(CONTENT_W * 0.48)
+    right_x = MARGIN_X + left_w + 60_000
+    right_w = CONTENT_W - left_w - 60_000 - 40_000
+
+    text(slide, MARGIN_X + 90_000, panel_y + 50_000, left_w - 100_000, 780_000, [
+        ("TERRASENTINEL AI  ·  SUSTAINABILITY", 9, True, BRAND),
+        ("Satellites see the ground move.", 15, True, INK),
+        ("Gemini tells engineers where to go first.", 13, True, BRAND),
+        ("", 3, False, MUTED),
+        ("Each pass → ranked Act list → honest threshold band → verified ticket.", 10, False, MUTED),
     ])
 
-    # Story flow chips (one palette — brand teal only)
-    flow = [
-        ("1", "Pass", "Sentinel-1 every 6–12 d"),
-        ("2", "Map", "Points → 250 m sites"),
-        ("3", "Rank", "RPI × consequence"),
-        ("4", "Explain", "Gemini + number guard"),
-        ("5", "Act", "Crew · next pass"),
+    # Proof chips — leave clear gap under headline (no overlap)
+    proofs = [
+        ("62k→4", "obs → Act today"),
+        ("RPI 86", "NH-58 CRITICAL"),
+        ("6 tools", "7 nums verified"),
     ]
-    fy = panel_y + 1_050_000
-    fh = 980_000
-    fw = (CONTENT_W - 200_000 - 4 * GAP) // 5
-    for i, (n, title, body) in enumerate(flow):
-        x = MARGIN_X + 100_000 + i * (fw + GAP)
-        card(slide, x, fy, fw, fh, SOFT, LINE, BRAND)
-        text(slide, x + 40_000, fy + 60_000, fw - 80_000, fh - 100_000, [
-            (n, 18, True, BRAND),
-            (title, 12, True, INK),
-            (body, 9, False, MUTED),
+    py = panel_y + 980_000
+    pw = (left_w - 100_000 - 2 * 40_000) // 3
+    ph = 640_000
+    for i, (a, b) in enumerate(proofs):
+        x = MARGIN_X + 90_000 + i * (pw + 40_000)
+        card(slide, x, py, pw, ph, SOFT, LINE, BRAND)
+        text(slide, x + 25_000, py + 50_000, pw - 45_000, ph - 80_000, [
+            (a, 13, True, BRAND),
+            (b, 8, False, MUTED),
         ], align=PP_ALIGN.CENTER)
 
-    # Value strip — same teal family, no rainbow accents
-    stats = [
-        ("87 → 7", "sites to Act list"),
-        ("RPI 86", "NH-58 CRITICAL band"),
-        ("35–64 d", "outlook if trend holds"),
-        ("GCP", "Run · BigQuery · Gemini"),
-    ]
-    sy = fy + fh + 80_000
-    sh = panel_y + panel_h - sy - 80_000
-    sw = (CONTENT_W - 200_000 - 3 * GAP) // 4
-    for i, (big, small) in enumerate(stats):
-        x = MARGIN_X + 100_000 + i * (sw + GAP)
-        card(slide, x, sy, sw, sh, PANEL, LINE, BRAND)
-        text(slide, x + 50_000, sy + 50_000, sw - 80_000, sh - 80_000, [
-            (big, 15, True, BRAND),
-            (small, 9, False, MUTED),
+    flow = [("1 Pass", "Sentinel-1"), ("2 Map", "250 m sites"), ("3 Rank", "RPI"), ("4 Guard", "Gemini"), ("5 Act", "Crew")]
+    fy = py + ph + 60_000
+    fh = panel_y + panel_h - fy - 80_000
+    fw = (left_w - 100_000 - 4 * 30_000) // 5
+    for i, (a, b) in enumerate(flow):
+        x = MARGIN_X + 90_000 + i * (fw + 30_000)
+        card(slide, x, fy, fw, fh, PANEL, LINE, BRAND)
+        text(slide, x + 12_000, fy + 40_000, fw - 24_000, fh - 60_000, [
+            (a, 9, True, BRAND),
+            (b, 8, False, INK),
+        ], align=PP_ALIGN.CENTER)
+
+    # Right: hero map
+    hero = SHOTS / "c-hero-map.png"
+    if hero.exists():
+        img_top = panel_y + 80_000
+        img_h = panel_h - 900_000
+        pic(slide, hero, right_x, img_top, right_w, img_h)
+        card(slide, right_x, img_top + img_h + 40_000, right_w, 700_000, BAD_BG, LINE, BAD)
+        text(slide, right_x + 50_000, img_top + img_h + 80_000, right_w - 80_000, 600_000, [
+            ("LIVE PROOF · NH-58 KM 3.25–3.50", 9, True, BAD),
+            ("6.2 mm/mo · 2× baseline · outlook 35–64 days if trend continues — not a failure date.", 9, False, INK),
         ])
 
 
 def s03_idea(slide):
-    set_title(slide, "Brief about the idea", "Ground creeps for months. Nobody ranks which creep matters.")
-    cells = grid(2, 1, gap=GAP)
-    # Left column: 4 stacked cards
-    lx, ly, lw, lh = cells[0]
+    set_title(slide, "Problem & decision", "Ground creeps for months. Nobody ranks which creep matters — crews go to the wrong place.")
+    # Top two columns
+    top_h = int(CONTENT_H * 0.72)
+    lx, ly, lw = MARGIN_X, CONTENT_TOP, int(CONTENT_W * 0.42)
     rows = [
-        (BAD_BG, BAD, "Mountain highways · NH-58", "Sole valley access. One slip cuts towns & supply."),
-        (WARN_BG, WARN, "Metro tunnels · Chennai", "Settlement under roads & buildings. Tight tolerance."),
-        (PANEL, SLATE, "Dams & tailings", "Crest / toe motion with severe downstream consequence."),
-        (SOFT, BRAND, "The decision we own", "Which 250 m needs an engineer, why, and how soon?"),
+        (BAD_BG, BAD, "NH-58 mountain highway", "Sole valley access. One slip cuts towns, pilgrims, supply."),
+        (WARN_BG, WARN, "Chennai metro tunnels", "Settlement under roads & buildings. Tight tolerances."),
+        (PANEL, SLATE, "Dams & tailings", "Crest/toe motion · severe downstream consequence."),
+        (SOFT, BRAND, "The one decision", "After this pass: which 250 m, why, and how soon?"),
     ]
-    rh = (lh - 3 * 50_000) // 4
+    rh = (top_h - 3 * 40_000) // 4
     for i, (bg, accent, title, body) in enumerate(rows):
-        y = ly + i * (rh + 50_000)
+        y = ly + i * (rh + 40_000)
         card(slide, lx, y, lw, rh, bg, LINE, accent)
-        text(slide, lx + 80_000, y + 50_000, lw - 120_000, rh - 80_000, [
-            (title, 11, True, accent),
+        text(slide, lx + 70_000, y + 35_000, lw - 100_000, rh - 50_000, [
+            (title, 10, True, accent),
             (body, 9, False, INK),
         ])
 
-    # Right: fail options + do/refuse
-    rx, ry, rw, rh = cells[1]
-    top_h = int(rh * 0.55)
-    card(slide, rx, ry, rw, top_h, WHITE, LINE, BRAND)
-    text(slide, rx + 80_000, ry + 40_000, rw - 120_000, 280_000, [("Today's options fail the decision", 11, True, INK)])
-    bullets(slide, rx + 80_000, ry + 320_000, rw - 120_000, top_h - 360_000, [
-        "Raw InSAR portal — no asset link, no who-goes-today",
-        "Rainfall alarm — trigger treated as hazard",
-        "Generic AI — invents mm and failure dates",
-        "Walk-over calendar — ignores acceleration now",
+    rx = lx + lw + GAP
+    rw = CONTENT_W - lw - GAP
+    card(slide, rx, ly, rw, int(top_h * 0.55), WHITE, LINE, BRAND)
+    text(slide, rx + 70_000, ly + 35_000, rw - 100_000, 220_000, [("Today fails the decision", 11, True, INK)])
+    bullets(slide, rx + 60_000, ly + 280_000, rw - 100_000, int(top_h * 0.55) - 300_000, [
+        "Raw InSAR portal — thousands of points, no asset link, no who-goes-today",
+        "Rainfall alarm — treats the trigger as the hazard; fires on stable ground",
+        "Generic AI chatbot — invents mm and failure dates; nothing to audit",
+        "Scheduled walk-over — calendar ignores which segment is accelerating now",
     ], size=9)
 
-    bot_y = ry + top_h + GAP
-    bot_h = rh - top_h - GAP
+    by = ly + int(top_h * 0.55) + GAP
+    bh = top_h - int(top_h * 0.55) - GAP
     half = (rw - GAP) // 2
-    card(slide, rx, bot_y, half, bot_h, OK_BG, LINE, OK)
-    text(slide, rx + 70_000, bot_y + 40_000, half - 100_000, 220_000, [("We do", 11, True, OK)])
-    bullets(slide, rx + 70_000, bot_y + 260_000, half - 100_000, bot_h - 300_000, [
-        "Creep on linear assets",
-        "Rank · explain · track",
-        "Threshold window + assumptions",
-    ], size=9)
+    card(slide, rx, by, half, bh, OK_BG, LINE, OK)
+    text(slide, rx + 50_000, by + 30_000, half - 80_000, 180_000, [("We do", 10, True, OK)])
+    bullets(slide, rx + 40_000, by + 200_000, half - 70_000, bh - 220_000, [
+        "Progressive creep on linear assets",
+        "Rank · explain · track between passes",
+        "Threshold window + assumptions stated",
+    ], size=8)
 
-    card(slide, rx + half + GAP, bot_y, half, bot_h, BAD_BG, LINE, BAD)
-    text(slide, rx + half + GAP + 70_000, bot_y + 40_000, half - 100_000, 220_000, [("We refuse", 11, True, BAD)])
-    bullets(slide, rx + half + GAP + 70_000, bot_y + 260_000, half - 100_000, bot_h - 300_000, [
+    card(slide, rx + half + GAP, by, half, bh, BAD_BG, LINE, BAD)
+    text(slide, rx + half + GAP + 50_000, by + 30_000, half - 80_000, 180_000, [("We refuse", 10, True, BAD)])
+    bullets(slide, rx + half + GAP + 40_000, by + 200_000, half - 70_000, bh - 220_000, [
         "Failure / collapse dates",
-        "Sudden inter-pass events",
-        "Certified safety claim",
-    ], size=9)
+        "Sudden events between 6–12 d passes",
+        "Certified safety decisions",
+    ], size=8)
+
+    # Funnel proof strip
+    fy = CONTENT_TOP + top_h + GAP
+    fh = CONTENT_H - top_h - GAP
+    card(slide, MARGIN_X, fy, CONTENT_W, fh, SOFT, LINE, BRAND)
+    text(slide, MARGIN_X + 60_000, fy + 25_000, 2_200_000, fh - 40_000, [("One pass · demo data", 9, True, BRAND)])
+    funnel = [("62,330", "observations"), ("1,355", "radar points"), ("87", "250 m sites"), ("7", "CRIT/ELEV"), ("4", "Act today")]
+    fw = (CONTENT_W - 2_400_000) // 5
+    for i, (n, lab) in enumerate(funnel):
+        x = MARGIN_X + 2_300_000 + i * fw
+        text(slide, x, fy + 40_000, fw - 20_000, fh - 60_000, [
+            (n, 14, True, BRAND),
+            (lab, 8, False, MUTED),
+        ], align=PP_ALIGN.CENTER)
 
 
 def s04_opportunities(slide):
-    set_title(slide, "Opportunities · USP", "Not an InSAR viewer — a decision layer with honest outlooks and guarded GenAI.")
+    set_title(slide, "Why we win", "Not another InSAR viewer — a consequence-ranked decision layer with guarded GenAI.")
     cols = [
-        ("How different?", BRAND, [
-            "250 m sites on corridor geometry",
-            "RPI = hazard x consequence x confidence",
-            "Alerts = pass diffs; Act list = today",
-            "Rain amplifies only (+50% cap)",
-            "USGS quakes: context, never scored",
-            "Gemini narrates; engine decides",
+        ("Differentiation", BRAND, [
+            "250 m chainage sites on corridor geometry — not a heat-map of every scatterer",
+            "RPI = hazard × consequence × confidence (deterministic Python / BigQuery)",
+            "Act list = today’s state; Alerts = what changed between passes",
+            "Rain amplifies only (+50% cap); USGS quakes never move a score",
+            "Gemini narrates tool results; the engine owns every number",
+            "WEAK radar guard — bad data can never become CRITICAL",
         ]),
         ("How it solves it", WARN, [
-            "Validate → locate → measure",
-            "WEAK guard: bad radar != CRITICAL",
-            "Rank Act-today shortlist",
-            "Outlook = ETA band, never a date",
-            "Ticket: summary · cause · checklist",
-            "Same maths: local XOR BigQuery",
+            "Validate → locate on assets → measure speed / accel / progress",
+            "Classify with data-quality gate; rank Act-today shortlist",
+            "Outlook = [ETA_const, ETA_accel] band ≤ 365 d — never a date",
+            "Work order: summary · hypothesis · urgency · field checklist",
+            "Same maths locally or in BigQuery (TS_DATA_BACKEND flag)",
+            "History is re-run from data — every past score is reproducible",
         ]),
-        ("USP / demo value", BAD, [
-            "Honest continuing-regime bands",
-            "Number guard rejects invented mm",
-            "Production GCP posture (Run + BQ)",
-            "62,330 obs → 87 sites → 7 action",
-            "4 Act today in Chamoli",
-            "Judge can sign in and act live",
+        ("USP · live proof", BAD, [
+            "Honest continuing-regime bands with assumptions spelled out",
+            "Number guard rejects invented mm and “will collapse” language",
+            "Live Cloud Run + BigQuery + Secret Manager + GCS state",
+            "Demo funnel: 62,330 obs → 87 sites → 7 action → 4 Act today",
+            "Gemini live: 6 tool calls · 7 numbers verified · 24h dispatch",
+            "Judge can sign in now — credentials on the login page",
         ]),
     ]
     cells = grid(3, 1)
     for (title, accent, items), (x, y, w, h) in zip(cols, cells):
         card(slide, x, y, w, h, WHITE, LINE, accent)
-        text(slide, x + 70_000, y + 60_000, w - 110_000, 280_000, [(title, 12, True, accent)])
-        bullets(slide, x + 60_000, y + 360_000, w - 100_000, h - 420_000, items, size=10)
+        text(slide, x + 60_000, y + 50_000, w - 100_000, 260_000, [(title, 12, True, accent)])
+        bullets(slide, x + 50_000, y + 320_000, w - 90_000, h - 360_000, items, size=9)
 
 
 def s05_features(slide):
-    set_title(slide, "Features", "Every surface ships a decision — not a dashboard toy.")
+    set_title(slide, "Product surfaces", "Every screen ships a decision an engineer can act on today.")
     feats = [
-        ("Command Center", "Map + KPIs + Act today, ranked by consequence"),
-        ("Site drawer", "RPI, speed, rain, outlook band, pass trend"),
-        ("Alerts", "What changed between passes"),
-        ("Brief · Trends · Portfolio", "Planning views; history recomputed from data"),
-        ("Work Orders + Gemini", "Template-first; 7 tools; number guard"),
-        ("Data Hub", "Validate-then-import; rain fetch; provenance; BQ sync"),
-        ("Access & audit", "RBAC · sessions · CSRF · audit log"),
-        ("Methodology", "Published formulae — every score auditable"),
+        ("Command Center", "Map + KPIs + Act today — ranked by consequence, not raw mm"),
+        ("Site drawer", "RPI, speed vs baseline, rain trigger, outlook band, pass trend"),
+        ("Alerts", "Pass-to-pass diffs — what changed, not a duplicate Act list"),
+        ("Trends · Portfolio", "16 passes recomputed from data; action sites 3→7 tracked"),
+        ("Work Orders", "Template-first ticket; Gemini polish; number guard on every figure"),
+        ("Data Hub", "Validate-then-import · Open-Meteo rain · provenance · BQ sync"),
+        ("Access & audit", "admin/analyst/viewer · CSRF · sessions · full audit log"),
+        ("Methodology", "Published formulae — every score auditable by a geotech"),
     ]
-    cells = grid(4, 2, gap=60_000)
+    cells = grid(4, 2, gap=55_000)
     for (title, body), (x, y, w, h) in zip(feats, cells):
-        card(slide, x, y, w, h, SOFT if (x // 1000) % 2 == 0 else WHITE, LINE, BRAND)
-        text(slide, x + 60_000, y + 50_000, w - 100_000, h - 80_000, [
+        card(slide, x, y, w, h, SOFT if ((x // 100_000) + (y // 100_000)) % 2 == 0 else WHITE, LINE, BRAND)
+        text(slide, x + 50_000, y + 45_000, w - 80_000, h - 70_000, [
             (title, 11, True, BRAND),
-            ("", 3, False, MUTED),
+            ("", 2, False, MUTED),
             (body, 9, False, INK),
         ])
 
@@ -499,7 +531,7 @@ def s06_process(slide):
 
 
 def s07_ui(slide):
-    set_title(slide, "Product UI (live)", "Running product screens — aspect-correct, not stretched wireframes.")
+    set_title(slide, "Product UI (live)", "What judges open today — Command Center → site → Gemini ticket → Data Hub.")
     # Prefer landscape captures so cells fill without tall letterboxing
     shots = [
         (SHOTS / "c-command.png", "Command Center · Act list"),
@@ -517,7 +549,7 @@ def s07_ui(slide):
 
 
 def s08_architecture(slide):
-    set_title(slide, "Architecture story", "Request flow on Google Cloud — one container, two storage backends, same maths.")
+    set_title(slide, "Architecture story", "Ingest → Store → Compute → Snapshot → Serve. One container. GenAI never owns the maths.")
     # Top: horizontal data-plane story
     flow = [
         ("Ingest", "Data Hub validates\nfiles & HTTPS links"),
@@ -556,25 +588,24 @@ def s08_architecture(slide):
 
 
 def s09_tech(slide):
-    set_title(slide, "Technologies & GenAI flow", "Google Cloud end-to-end. Gemini turns a verified score into an action.")
-    # Story sentence
-    card(slide, MARGIN_X, CONTENT_TOP, CONTENT_W, 420_000, SOFT, LINE, BRAND)
-    text(slide, MARGIN_X + 80_000, CONTENT_TOP + 60_000, CONTENT_W - 160_000, 320_000, [
+    set_title(slide, "GenAI on Google Cloud", "Without GenAI: a number. With Gemini + guard: a ticket an engineer can trust.")
+    card(slide, MARGIN_X, CONTENT_TOP, CONTENT_W, 500_000, SOFT, LINE, BRAND)
+    text(slide, MARGIN_X + 70_000, CONTENT_TOP + 50_000, CONTENT_W - 140_000, 400_000, [
         (
-            "Without GenAI an engineer gets “RPI 86 · CRITICAL”. With Gemini + our guard they get a ticket: "
-            "what is happening, likely cause (hypothesis), what to do by when, and a site checklist — every number from tools.",
+            "LIVE PROOF: Gemini drafted a Metro Line 4 ticket with 6 tool calls and 7 numbers verified. "
+            "Recommendation: “Dispatch an inspection crew within 24 hours…” — every millimetre from tools, not free text.",
             10,
-            False,
+            True,
             INK,
         ),
     ])
 
-    mid_y = CONTENT_TOP + 420_000 + GAP
-    mid_h = int((CONTENT_H - 420_000 - GAP) * 0.42)
+    mid_y = CONTENT_TOP + 500_000 + GAP
+    mid_h = int((CONTENT_H - 500_000 - GAP) * 0.38)
     nodes = [
         ("Ingest", "Cloud Run\nData Hub"),
         ("Store", "BigQuery\nGIS + history"),
-        ("Compute", "Engine\nscores sites"),
+        ("Compute", "Engine\nRPI · tier · band"),
         ("Explain", "Gemini\n+ number guard"),
         ("Act", "Map · ticket\n· audit"),
     ]
@@ -583,31 +614,36 @@ def s09_tech(slide):
         x = MARGIN_X + i * (nw + GAP)
         fill = BRAND if i == 3 else WHITE
         card(slide, x, mid_y, nw, mid_h, fill, LINE, BRAND)
-        text(slide, x + 25_000, mid_y + 40_000, nw - 50_000, mid_h - 60_000, [
+        text(slide, x + 25_000, mid_y + 35_000, nw - 50_000, mid_h - 50_000, [
             (t, 11, True, WHITE if i == 3 else BRAND),
             (b, 8, False, WHITE if i == 3 else MUTED),
         ], align=PP_ALIGN.CENTER)
 
     bot_y = mid_y + mid_h + GAP
     bot_h = FOOTER_TOP - bot_y - 20_000
-    half = (CONTENT_W - GAP) // 2
-    card(slide, MARGIN_X, bot_y, half, bot_h, WHITE, LINE, BRAND)
-    text(slide, MARGIN_X + 60_000, bot_y + 40_000, half - 100_000, 200_000, [("Gemini loop", 11, True, BRAND)])
-    bullets(slide, MARGIN_X + 50_000, bot_y + 240_000, half - 90_000, bot_h - 270_000, [
-        "7 read-only tools (metrics → quality)",
-        "Round 0 must call tools → investigate → JSON",
-        "Guard rejects invented mm / collapse language",
-        "Fallback models; template always ships",
-    ], size=9)
-
-    card(slide, MARGIN_X + half + GAP, bot_y, half, bot_h, WHITE, LINE, BRAND)
-    text(slide, MARGIN_X + half + GAP + 60_000, bot_y + 40_000, half - 100_000, 200_000, [("GCP services", 11, True, BRAND)])
-    bullets(slide, MARGIN_X + half + GAP + 50_000, bot_y + 240_000, half - 90_000, bot_h - 270_000, [
-        "Cloud Run — SPA + API + engine + agent",
-        "BigQuery — partitions, spatial join, bytes cap",
-        "Vertex AI / AI Studio — Gemini",
-        "Secret Manager · GCS · ADC (no key files)",
-    ], size=9)
+    third = (CONTENT_W - 2 * GAP) // 3
+    blocks = [
+        ("Gemini loop", [
+            "7 tools: metrics, history, outlook, rain, seismic, exposure, quality",
+            "Round 0 MUST call tools → investigate → write JSON",
+            "Temp 0.1 · model fallback on 429/5xx",
+        ]),
+        ("Number guard", [
+            "Rejects any mm/days/% not in a tool result",
+            "Rejects “will collapse”, “failure date”, “no risk”",
+            "On failure: labelled template still ships",
+        ]),
+        ("GCP stack", [
+            "Cloud Run — SPA + API + engine + agent",
+            "BigQuery — partitions, ST_DWITHIN, bytes cap",
+            "Vertex/AI Studio · Secrets · GCS · ADC",
+        ]),
+    ]
+    for i, (title, items) in enumerate(blocks):
+        x = MARGIN_X + i * (third + GAP)
+        card(slide, x, bot_y, third, bot_h, WHITE, LINE, BRAND)
+        text(slide, x + 50_000, bot_y + 35_000, third - 80_000, 180_000, [(title, 10, True, BRAND)])
+        bullets(slide, x + 40_000, bot_y + 220_000, third - 70_000, bot_h - 250_000, items, size=8)
 
 
 def s10_cost(slide):
@@ -629,7 +665,7 @@ def s10_cost(slide):
 
 
 def s11_snapshots(slide):
-    set_title(slide, "Prototype snapshots", "Demo value on screen — Chamoli, NH-58 CRITICAL, guarded ticket.")
+    set_title(slide, "Prototype snapshots", "Winning proof on screen — Chamoli Act list, NH-58 CRITICAL, verified Gemini ticket.")
     shots = [
         (SHOTS / "c-hero-map.png", "Chamoli · 69 sites · 4 act today"),
         (SHOTS / "c-map-chamoli.png", "Ranked map — not every scatterer"),
@@ -643,81 +679,86 @@ def s11_snapshots(slide):
 
 
 def s12_performance(slide):
-    set_title(slide, "Performance / benchmarking", "NH-58 KM 3.25-3.50 — same numbers in UI, tools, and work order.")
+    set_title(slide, "Worked proof", "NH-58 KM 3.25–3.50 — same numbers in UI, tools, and Gemini work order.")
     cells = grid(2, 1, gap=GAP)
     lx, ly, lw, lh = cells[0]
     card(slide, lx, ly, lw, lh, WHITE, LINE, BAD)
-    text(slide, lx + 70_000, ly + 50_000, lw - 110_000, 280_000, [("Worked example · CRITICAL · RPI 86", 11, True, BAD)])
-    bullets(slide, lx + 70_000, ly + 340_000, lw - 110_000, lh - 400_000, [
-        "Inputs: 6.2 vs 2.8 mm/mo · 2.2x · 29.7/40 mm · rain 213 mm",
-        "kin = 100*(.4*0.62+.3*0.40+.3*0.74) = 59.4",
-        "hazard = 59.4*(1+0.5*1.0) = 89.1 (rain capped)",
-        "RPI = 89.1*0.975*0.985 ~ 85.7 → CRITICAL",
-        "Outlook 35-64 days if trend continues — NOT a failure date",
-        "History: site 61→86 · action sites 3→7 over 16 passes",
-        "What-if: minor road 57 ELEV · weak radar ≤15 · rain-only ~1",
-    ], size=9)
+    text(slide, lx + 60_000, ly + 40_000, lw - 100_000, 260_000, [("CRITICAL · RPI 86 · band 35–64 d", 11, True, BAD)])
+    bullets(slide, lx + 50_000, ly + 320_000, lw - 90_000, lh - 360_000, [
+        "Inputs: 6.2 vs 2.8 mm/mo · 2.2× · 29.7/40 mm · rain 213 mm · crit 0.95 · conf 0.97",
+        "kin = 100×(.4·0.62 + .3·0.40 + .3·0.74) = 59.4",
+        "hazard = 59.4×(1+0.5×1.0) = 89.1 (rain capped)",
+        "RPI = 89.1×0.975×0.985 ≈ 85.7 → CRITICAL (threshold approach)",
+        "Outlook: 51 d const · 44 d accel → widened 35–64 d if trend continues",
+        "History: this site 61→86 · portfolio action sites 3→7 over 16 passes",
+        "What-if: minor road→57 ELEV · weak radar→≤15 WEAK · rain on stable→≈1",
+        "Integrity: GenAI never computes RPI / tier / ETA — tools only",
+    ], size=8)
 
     rx, ry, rw, rh = cells[1]
-    # Reserve clear bands so caption never meets the latency card
-    img_band = int(rh * 0.62)
-    gap2 = 100_000
-    lat_y = ry + img_band + gap2
-    lat_h = rh - img_band - gap2
+    img_band = int(rh * 0.55)
     shot_cell(slide, SHOTS / "c-site-trend.png", rx, ry, rw, img_band, "Site trend · displacement + rain")
+    lat_y = ry + img_band + 80_000
+    lat_h = rh - img_band - 80_000
     card(slide, rx, lat_y, rw, lat_h, SOFT, LINE, BRAND)
-    text(slide, rx + 60_000, lat_y + 50_000, rw - 100_000, lat_h - 80_000, [
+    text(slide, rx + 50_000, lat_y + 40_000, rw - 80_000, lat_h - 60_000, [
         ("Live Cloud Run + BigQuery (warm)", 10, True, BRAND),
         ("summary ~0.4s · sites ~0.3s · alerts ~2s", 9, False, INK),
         ("Hot-path prefetch before history warm", 9, False, INK),
-        ("GenAI never computes RPI / tier / ETA", 9, True, INK),
+        ("Gemini: 6 tool calls · 7 numbers verified", 9, True, BRAND),
     ])
 
 
 def s13_future(slide):
-    set_title(slide, "Future development", "Scale the data plane — honesty rules stay fixed.")
-    cells = grid(2, 1)
-    left, right = [
-        (BRAND, "Roadmap", [
-            "Production InSAR on the same Data Hub schema",
-            "Materialize point-assignment for national scale",
-            "HA once sessions leave single-process files",
-            "Field checklist / offline crew packet",
-            "OIDC / IAP for enterprise buyers",
-            "Deeper rain/geology as amplifiers only",
-        ]),
-        (WARN, "Buyer · ask · honesty", [
-            "Buyer: asset-integrity / geotech teams",
-            "What they buy: attention — 1,355 pts → 7 sites",
-            "Ask: live demo + 3-min video + repo",
-            "Outlook bands are never collapse dates",
-            "Gemini narrates tools only",
-            "Synthetic demo data labelled in UI",
-        ]),
-    ]
-    for (accent, title, items), (x, y, w, h) in zip([left, right], cells):
-        card(slide, x, y, w, h, SOFT if accent == WARN else WHITE, LINE, accent)
-        text(slide, x + 70_000, y + 50_000, w - 110_000, 280_000, [(title, 12, True, accent)])
-        bullets(slide, x + 60_000, y + 350_000, w - 100_000, h - 400_000, items, size=10)
+    set_title(slide, "Ask · buyer · roadmap", "Sustainability impact today. Scale tomorrow. Honesty rules never move.")
+    # Top ask bar
+    card(slide, MARGIN_X, CONTENT_TOP, CONTENT_W, 520_000, BRAND, BRAND, None)
+    text(slide, MARGIN_X + 80_000, CONTENT_TOP + 60_000, CONTENT_W - 160_000, 400_000, [
+        ("THE ASK: Review the live demo, the 3-minute video, and the repository.", 12, True, WHITE),
+        ("Buyer: asset-integrity / geotech teams. They buy engineer attention — 1,355 points become 7 sites.", 10, False, WHITE),
+    ])
+
+    bot_y = CONTENT_TOP + 520_000 + GAP
+    bot_h = CONTENT_H - 520_000 - GAP
+    half = (CONTENT_W - GAP) // 2
+    card(slide, MARGIN_X, bot_y, half, bot_h, WHITE, LINE, BRAND)
+    text(slide, MARGIN_X + 60_000, bot_y + 40_000, half - 100_000, 220_000, [("Roadmap", 11, True, BRAND)])
+    bullets(slide, MARGIN_X + 50_000, bot_y + 280_000, half - 90_000, bot_h - 310_000, [
+        "Production InSAR providers on the same Data Hub schema",
+        "Materialize spatial assignment for national corridors",
+        "HA when session store leaves single-process files",
+        "OIDC / IAP · field offline packet · deeper amplifiers only",
+    ], size=9)
+
+    card(slide, MARGIN_X + half + GAP, bot_y, half, bot_h, SOFT, LINE, BAD)
+    text(slide, MARGIN_X + half + GAP + 60_000, bot_y + 40_000, half - 100_000, 220_000, [("Non-negotiable honesty", 11, True, BAD)])
+    bullets(slide, MARGIN_X + half + GAP + 50_000, bot_y + 280_000, half - 90_000, bot_h - 310_000, [
+        "Outlook bands ≠ collapse / failure dates — always",
+        "Gemini narrates tool numbers only — always",
+        "Synthetic demo data labelled in the UI — always",
+        "Secrets in Secret Manager / .env — never in git",
+    ], size=9)
 
 
 def s14_links(slide):
-    set_title(slide, "Submission links", "GitHub · 3-minute demo · live product.")
+    set_title(slide, "Judge path · links", "Sign in → Command Center → NH-58 site → Work Order → Data Hub (5 minutes).")
     links = [
-        (BRAND, "GitHub public repository", "https://github.com/ramasamyp-aiengineer/terra-sentinel-ai"),
-        (WARN, "Demo video (3 minutes)", "docs/pitch/TerraSentinel-AI-Demo-3min.mp4  (upload Drive/YouTube for portal)"),
-        (BLUE, "Final product (live)", "https://terrasentinel-598899050820.asia-southeast1.run.app"),
+        (BRAND, "1 · GitHub", "https://github.com/ramasamyp-aiengineer/terra-sentinel-ai"),
+        (WARN, "2 · Demo video (3 min)", "docs/pitch/TerraSentinel-AI-Demo-3min.mp4 — upload to Drive/YouTube for the portal"),
+        (BLUE, "3 · Live product", "https://terrasentinel-598899050820.asia-southeast1.run.app"),
     ]
-    rh = (CONTENT_H - 2 * GAP - 280_000) // 3
+    rh = (CONTENT_H - 2 * GAP - 520_000) // 3
     for i, (accent, title, url) in enumerate(links):
         y = CONTENT_TOP + i * (rh + GAP)
         card(slide, MARGIN_X, y, CONTENT_W, rh, WHITE, LINE, accent)
-        text(slide, MARGIN_X + 100_000, y + 60_000, CONTENT_W - 180_000, rh - 100_000, [
-            (title, 13, True, accent),
+        text(slide, MARGIN_X + 90_000, y + 50_000, CONTENT_W - 160_000, rh - 80_000, [
+            (title, 12, True, accent),
             (url, 11, False, INK),
         ])
-    text(slide, MARGIN_X, FOOTER_TOP - 260_000, CONTENT_W, 220_000, [
-        ("Sign-in credentials shown on the login page · Judge walk: docs/JUDGE.md", 10, False, MUTED),
+    card(slide, MARGIN_X, CONTENT_TOP + 3 * (rh + GAP), CONTENT_W, 450_000, SOFT, LINE, BRAND)
+    text(slide, MARGIN_X + 80_000, CONTENT_TOP + 3 * (rh + GAP) + 50_000, CONTENT_W - 160_000, 360_000, [
+        ("Credentials are shown on the sign-in page (judge demo hint).", 11, True, BRAND),
+        ("Look for: Act list · outlook band (not a date) · “numbers verified” on the work order.", 10, False, INK),
     ])
 
 
@@ -760,24 +801,39 @@ def s15_engine(slide):
 
 
 def s16_thanks(slide):
-    # Full safe-zone panel (template end art may sit behind)
     card(slide, MARGIN_X, CONTENT_TOP, CONTENT_W, CONTENT_H, WHITE, LINE, BRAND)
     logo = SHOTS / "logo-mark.jpg"
     if logo.exists():
-        pic(slide, logo, MARGIN_X + 100_000, CONTENT_TOP + 120_000, 480_000, 480_000)
-    text(slide, MARGIN_X + 700_000, CONTENT_TOP + 140_000, CONTENT_W - 900_000, 500_000, [
+        pic(slide, logo, MARGIN_X + 100_000, CONTENT_TOP + 80_000, 420_000, 420_000)
+    text(slide, MARGIN_X + 600_000, CONTENT_TOP + 100_000, CONTENT_W - 760_000, 400_000, [
         ("TerraSentinel AI", 20, True, BRAND),
         ("Thank you — Team Agent Ram", 14, True, INK),
     ])
-    text(slide, MARGIN_X + 120_000, CONTENT_TOP + 750_000, CONTENT_W - 240_000, 2_400_000, [
-        ("Which 250 metres should an engineer inspect today?", 13, True, INK),
+    text(slide, MARGIN_X + 100_000, CONTENT_TOP + 580_000, CONTENT_W - 200_000, 900_000, [
+        ("Which 250 metres should an engineer inspect today?", 14, True, INK),
         ("The engine ranks them. Gemini writes the ticket. Every number is checked.", 11, False, MUTED),
-        ("", 8, False, MUTED),
-        ("Ramasamy P  ·  ramp21052000@gmail.com  ·  +91 90250 32130", 11, False, BRAND),
-        ("Live demo + GitHub + 3-min video", 10, False, MUTED),
-        ("Google Cloud AI Builder Cup 2026 · Sustainability", 10, False, MUTED),
         ("", 6, False, MUTED),
-        ("Gemini · Vertex AI    ·    BigQuery    ·    Cloud Run    ·    Sentinel-1", 11, True, INK),
+        ("62,330 obs → 7 action sites · RPI 86 worked end-to-end · Gemini 6 tools / 7 numbers verified", 10, True, BRAND),
+    ])
+    # Three proof cards
+    proofs = [
+        ("Live", "Cloud Run + BigQuery\ncredentials on login"),
+        ("Honest", "Bands ≠ failure dates\nGenAI never invents mm"),
+        ("GCP", "Run · BQ · Vertex\nSecrets · GCS · ADC"),
+    ]
+    pw = (CONTENT_W - 200_000 - 2 * GAP) // 3
+    py = CONTENT_TOP + 1_700_000
+    ph = 900_000
+    for i, (a, b) in enumerate(proofs):
+        x = MARGIN_X + 100_000 + i * (pw + GAP)
+        card(slide, x, py, pw, ph, SOFT, LINE, BRAND)
+        text(slide, x + 50_000, py + 60_000, pw - 80_000, ph - 100_000, [
+            (a, 14, True, BRAND),
+            (b, 10, False, INK),
+        ], align=PP_ALIGN.CENTER)
+    text(slide, MARGIN_X + 100_000, py + ph + 60_000, CONTENT_W - 200_000, 500_000, [
+        ("Ramasamy P  ·  ramp21052000@gmail.com  ·  +91 90250 32130", 11, False, BRAND),
+        ("Google Cloud AI Builder Cup 2026 · JAPAC · Sustainability", 10, False, MUTED),
     ])
 
 
