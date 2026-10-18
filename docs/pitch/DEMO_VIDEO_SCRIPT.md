@@ -124,7 +124,7 @@ A guard verifies every millimetre and every day against the tool results. Unsupp
 
 ## Recording checklist (when filming live)
 
-1. Backend on `:8000`, frontend on `:5173`, signed in as analyst/admin.
+1. Prefer the **live** app: https://terrasentinel-598899050820.asia-southeast1.run.app — sign in with credentials shown on the login page (or local `:5173` / `:8000`).
 2. Region starts on **India**, then **Chamoli**.
 3. Have Work Order for Metro Line 4 or NH-58 already generated (or generate live if Gemini key is set).
 4. Cursor large; zoom 110% in Edge if text is small.

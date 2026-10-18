@@ -3,7 +3,7 @@
 How to evaluate TerraSentinel as a **production-shaped** sustainability product, not a slide deck.
 
 **Live:** https://terrasentinel-598899050820.asia-southeast1.run.app  
-**Credentials:** shown on the sign-in page (username + password). Sign in as admin for the full tour.  
+**Credentials:** on the Cup deck **Judge path · links** slide (not on the public login page). Sign in as admin for the full tour.  
 **Cup submission deck (official template):** [`TerraSentinel-AI-Builder-Cup-Submission.pdf`](pitch/TerraSentinel-AI-Builder-Cup-Submission.pdf) · [`.pptx`](pitch/TerraSentinel-AI-Builder-Cup-Submission.pptx)  
 Rebuild: `python docs/pitch/build_submission_deck.py`
 
@@ -66,7 +66,7 @@ Architecture detail: `docs/pitch/ARCHITECTURE_LAYERS.md` · deploy: `docs/DEPLOY
 # backend/.env — for a local judge demo with credentials on the login page:
 # TS_ADMIN_USER=admin
 # TS_ADMIN_PASSWORD=your-demo-password
-# TS_SHOW_LOGIN_HINT=true
+# Keep TS_SHOW_LOGIN_HINT=false for production / Cloud Run (credentials go in the deck).
 ```
 
 Full run instructions: root `README.md`.

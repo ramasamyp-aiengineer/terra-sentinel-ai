@@ -83,7 +83,7 @@ def login_hint():
         "username": settings.admin_user,
         "password": password,
         "role": "admin",
-        "note": "Judge demo account for the AI Builder Cup. Turn off TS_SHOW_LOGIN_HINT after judging.",
+        "note": "Local demo hint only. Prefer putting credentials in the submission deck for judges.",
     }
 
 

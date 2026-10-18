@@ -445,7 +445,7 @@ def s04_opportunities(slide):
             "Live Cloud Run + BigQuery + Secret Manager + GCS state",
             "Demo funnel: 62,330 obs → 87 sites → 7 action → 4 Act today",
             "Gemini live: 6 tool calls · 7 numbers verified · 24h dispatch",
-            "Judge can sign in now — credentials on the login page",
+            "Judge can sign in now — credentials on the links slide",
         ]),
     ]
     cells = grid(3, 1)
@@ -736,8 +736,32 @@ def s13_future(slide):
     ], size=9)
 
 
+def _judge_creds() -> tuple[str, str]:
+    """Read demo sign-in from backend/.env at build time (not hardcoded in source)."""
+    user, password = "admin", ""
+    env = PITCH.parent.parent / "backend" / ".env"
+    if env.is_file():
+        for line in env.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            k, v = k.strip(), v.strip().strip('"').strip("'")
+            if k == "TS_ADMIN_USER" and v:
+                user = v
+            elif k == "TS_ADMIN_PASSWORD" and v:
+                password = v
+    return user, password
+
+
 def s14_links(slide):
     set_title(slide, "Judge path · links", "Sign in → Command Center → NH-58 site → Work Order → Data Hub (5 minutes).")
+    user, password = _judge_creds()
+    cred_line = (
+        f"Username: {user}   ·   Password: {password}"
+        if password
+        else f"Username: {user}   ·   Password: ask Team Agent Ram"
+    )
     links = [
         (BRAND, "1 · GitHub", "https://github.com/ramasamyp-aiengineer/terra-sentinel-ai"),
         (WARN, "2 · Demo video (3 min)", "docs/pitch/TerraSentinel-AI-Demo-3min.mp4 — upload to Drive/YouTube for the portal"),
@@ -753,7 +777,8 @@ def s14_links(slide):
         ])
     card(slide, MARGIN_X, CONTENT_TOP + 3 * (rh + GAP), CONTENT_W, 450_000, SOFT, LINE, BRAND)
     text(slide, MARGIN_X + 80_000, CONTENT_TOP + 3 * (rh + GAP) + 50_000, CONTENT_W - 160_000, 360_000, [
-        ("Credentials are shown on the sign-in page (judge demo hint).", 11, True, BRAND),
+        ("Sign-in (not shown on the public login page):", 11, True, BRAND),
+        (cred_line, 12, True, INK),
         ("Look for: Act list · outlook band (not a date) · “numbers verified” on the work order.", 10, False, INK),
     ])
 

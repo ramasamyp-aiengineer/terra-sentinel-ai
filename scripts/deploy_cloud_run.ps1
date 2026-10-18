@@ -41,11 +41,18 @@ if (-not (Test-Path $GcloudCmd)) {
 if (-not $GcloudCmd -or -not (Test-Path $GcloudCmd)) { throw "gcloud.cmd not found. Install Google Cloud SDK." }
 
 function Invoke-GCloud {
-  param([Parameter(ValueFromRemainingArguments = $true)][string[]]$GcloudArgs)
+  param(
+    [switch]$ShowOutput,
+    [Parameter(ValueFromRemainingArguments = $true)][string[]]$GcloudArgs
+  )
   $prev = $ErrorActionPreference
   $ErrorActionPreference = "Continue"
-  # Discard stdout/stderr so the caller only gets a numeric exit code (not mixed pipeline output).
-  & $GcloudCmd @GcloudArgs 1>$null 2>$null
+  # gcloud prints progress on stderr; that must not trip $ErrorActionPreference=Stop.
+  if ($ShowOutput) {
+    & $GcloudCmd @GcloudArgs
+  } else {
+    & $GcloudCmd @GcloudArgs 1>$null 2>$null
+  }
   $code = if ($null -eq $LASTEXITCODE) { 0 } else { [int]$LASTEXITCODE }
   $ErrorActionPreference = $prev
   return $code
@@ -186,8 +193,8 @@ if (-not $SkipBuild) {
 }
 
 $min = if ($KeepWarm) { 1 } else { 0 }
-# TS_SHOW_LOGIN_HINT=true so Cup judges see username + password on the sign-in page.
-$envVars = "TS_TRUST_PROXY=true,TS_PROXY_HOPS=1,TS_AUTH_ENABLED=true,TS_SHOW_LOGIN_HINT=true,TS_ADMIN_USER=$adminUser,TS_GCP_PROJECT=$ProjectId,TS_GCP_REGION=$Region"
+# Credentials for judges live in the Cup submission deck — never on the public login page.
+$envVars = "TS_TRUST_PROXY=true,TS_PROXY_HOPS=1,TS_AUTH_ENABLED=true,TS_SHOW_LOGIN_HINT=false,TS_ADMIN_USER=$adminUser,TS_GCP_PROJECT=$ProjectId,TS_GCP_REGION=$Region"
 if ($EnableBigQuery) {
   $envVars += ",TS_DATA_BACKEND=bigquery,TS_BQ_DATASET=terrasentinel,TS_BQ_LOCATION=US"
 }
@@ -196,24 +203,28 @@ $secrets = "TS_ADMIN_PASSWORD=ts-admin-password:latest"
 if ($geminiKey) { $secrets += ",TS_GEMINI_API_KEY=ts-gemini-api-key:latest" }
 
 Write-Host "==> Cloud Run deploy (max-instances=1)"
-$code = Invoke-GCloud run deploy $Service `
-  --image="${Image}:latest" `
-  --region=$Region `
-  --platform=managed `
-  --service-account=$Sa `
-  --allow-unauthenticated `
-  --port=8080 `
-  --memory=2Gi `
-  --cpu=2 `
-  --concurrency=40 `
-  --max-instances=1 `
-  --min-instances=$min `
-  --timeout=300 `
-  --set-env-vars=$envVars `
-  --set-secrets=$secrets `
-  --add-volume=name=state,type=cloud-storage,bucket=$Bucket `
-  --add-volume-mount=volume=state,mount-path=/srv/terrasentinel/data/state `
-  --execution-environment=gen2
+# Pass args as one array — backtick-splatting into RemainingArguments can drop flags under PS 5.1.
+$deployArgs = @(
+  "run", "deploy", $Service,
+  "--image=${Image}:latest",
+  "--region=$Region",
+  "--platform=managed",
+  "--service-account=$Sa",
+  "--allow-unauthenticated",
+  "--port=8080",
+  "--memory=2Gi",
+  "--cpu=2",
+  "--concurrency=40",
+  "--max-instances=1",
+  "--min-instances=$min",
+  "--timeout=300",
+  "--set-env-vars=$envVars",
+  "--set-secrets=$secrets",
+  "--add-volume=name=state,type=cloud-storage,bucket=$Bucket",
+  "--add-volume-mount=volume=state,mount-path=/srv/terrasentinel/data/state",
+  "--execution-environment=gen2"
+)
+$code = Invoke-GCloud -ShowOutput @deployArgs
 if ($code -ne 0) { throw "Cloud Run deploy failed" }
 
 $url = & $GcloudCmd run services describe $Service --region=$Region --format='value(status.url)'

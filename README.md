@@ -9,7 +9,7 @@ Built for the **Google Cloud AI Builder Cup 2026 (JAPAC · Sustainability)**.
 | | |
 | --- | --- |
 | **Live demo** | https://terrasentinel-598899050820.asia-southeast1.run.app |
-| **Sign-in** | Username and password are **shown on the login page** (judge demo hint) |
+| **Sign-in** | Username + password are in the **Cup submission deck** (links slide), not on the public login page |
 | **Judge guide** | [`docs/JUDGE.md`](docs/JUDGE.md) — five-minute walk + production story |
 | **Cup submission deck** | [`docs/pitch/TerraSentinel-AI-Builder-Cup-Submission.pdf`](docs/pitch/TerraSentinel-AI-Builder-Cup-Submission.pdf) · [`.pptx`](docs/pitch/TerraSentinel-AI-Builder-Cup-Submission.pptx) (official template filled) |
 | **Source** | https://github.com/ramasamyp-aiengineer/terra-sentinel-ai |
@@ -98,7 +98,7 @@ Or `npm run build` in `frontend`, then open `http://127.0.0.1:8000/` (API serves
 | Setting | Purpose |
 | --- | --- |
 | `TS_ADMIN_USER` / `TS_ADMIN_PASSWORD` | First-run administrator |
-| `TS_SHOW_LOGIN_HINT=true` | Show username + password on the sign-in page (Cup / demos only) |
+| `TS_SHOW_LOGIN_HINT=true` | Local-only: expose username + password on sign-in (off on Cloud Run; use the deck) |
 | `TS_GEMINI_API_KEY` | Work-order narratives (template fallback if empty) |
 | `TS_DATA_BACKEND=bigquery` + `TS_GCP_PROJECT` | BigQuery storage (needs GCP credentials — a Gemini key is **not** enough) |
 | `TS_TRUST_PROXY` / `TS_PROXY_HOPS` | Only behind a proxy you control (e.g. Cloud Run) |
