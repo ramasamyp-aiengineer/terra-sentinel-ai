@@ -35,6 +35,8 @@ deploy_out.txt
 deploy_run.txt
 docs/pitch/_deploy_log.txt
 docs/pitch/_tpl_extract/
+docs/pitch/_qa/
+docs/pitch/_qa_png/
 
 # OS / editor
 .DS_Store

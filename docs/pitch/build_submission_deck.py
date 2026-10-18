@@ -275,41 +275,67 @@ def s01_team(slide):
 
 
 def s02_cover(slide):
-    # Rewrite instruction panel
+    """Slide 2 template is dark — cover it with a light story panel (unified teal palette)."""
+    # Hide / blank any leftover instruction text (low-contrast grey on black)
     for sh in slide.shapes:
-        if sh.has_text_frame and ("download" in sh.text_frame.text.lower() or "TerraSentinel" in sh.text_frame.text):
-            tf = sh.text_frame
-            tf.clear()
-            for i, (t, size, bold, color) in enumerate([
-                ("TerraSentinel AI", 18, True, BRAND),
-                ("Which 250 m should an engineer inspect today?", 12, True, INK),
-                ("", 3, False, MUTED),
-                ("Engine ranks consequence. Gemini writes the ticket. Every number checked.", 10, False, MUTED),
-            ]):
-                p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-                p.space_after = Pt(2)
-                run = p.add_run()
-                run.text = t
-                run.font.size = Pt(size)
-                run.font.bold = bold
-                run.font.color.rgb = color
-                run.font.name = "Calibri"
+        if sh.has_text_frame and sh.top and 800_000 < sh.top < 4_000_000:
+            try:
+                sh.text_frame.clear()
+            except Exception:
+                pass
 
-    # Stats ONLY in safe bottom band (below decorative art ~3.8M)
-    stats = [
-        ("87 → 7", "sites → act list", BRAND),
-        ("RPI 86", "NH-58 · 35–64 d band", BAD),
-        ("Gemini", "verified tool numbers", BRAND2),
-        ("GCP", "Run · BQ · Vertex", BLUE),
+    # Full light story panel over the dark art (keeps Google chrome if any)
+    panel_y = 420_000
+    panel_h = FOOTER_TOP - panel_y - 30_000
+    card(slide, MARGIN_X, panel_y, CONTENT_W, panel_h, WHITE, LINE, BRAND)
+
+    text(slide, MARGIN_X + 100_000, panel_y + 80_000, CONTENT_W - 200_000, 700_000, [
+        ("TERRASENTINEL AI  ·  STORY", 9, True, BRAND),
+        ("Satellites see the ground move. Gemini tells engineers where to go first.", 16, True, INK),
+        ("", 4, False, MUTED),
+        (
+            "Each Sentinel-1 pass → ranked Act list → honest threshold band (never a failure date) → number-verified ticket.",
+            11,
+            False,
+            MUTED,
+        ),
+    ])
+
+    # Story flow chips (one palette — brand teal only)
+    flow = [
+        ("1", "Pass", "Sentinel-1 every 6–12 d"),
+        ("2", "Map", "Points → 250 m sites"),
+        ("3", "Rank", "RPI × consequence"),
+        ("4", "Explain", "Gemini + number guard"),
+        ("5", "Act", "Crew · next pass"),
     ]
-    y = 3_820_000
-    h = FOOTER_TOP - y - 40_000
-    cw = (CONTENT_W - 3 * GAP) // 4
-    for i, (big, small, accent) in enumerate(stats):
-        x = MARGIN_X + i * (cw + GAP)
-        card(slide, x, y, cw, h, SOFT, LINE, accent)
-        text(slide, x + 70_000, y + 60_000, cw - 100_000, h - 100_000, [
-            (big, 16, True, accent),
+    fy = panel_y + 1_050_000
+    fh = 980_000
+    fw = (CONTENT_W - 200_000 - 4 * GAP) // 5
+    for i, (n, title, body) in enumerate(flow):
+        x = MARGIN_X + 100_000 + i * (fw + GAP)
+        card(slide, x, fy, fw, fh, SOFT, LINE, BRAND)
+        text(slide, x + 40_000, fy + 60_000, fw - 80_000, fh - 100_000, [
+            (n, 18, True, BRAND),
+            (title, 12, True, INK),
+            (body, 9, False, MUTED),
+        ], align=PP_ALIGN.CENTER)
+
+    # Value strip — same teal family, no rainbow accents
+    stats = [
+        ("87 → 7", "sites to Act list"),
+        ("RPI 86", "NH-58 CRITICAL band"),
+        ("35–64 d", "outlook if trend holds"),
+        ("GCP", "Run · BigQuery · Gemini"),
+    ]
+    sy = fy + fh + 80_000
+    sh = panel_y + panel_h - sy - 80_000
+    sw = (CONTENT_W - 200_000 - 3 * GAP) // 4
+    for i, (big, small) in enumerate(stats):
+        x = MARGIN_X + 100_000 + i * (sw + GAP)
+        card(slide, x, sy, sw, sh, PANEL, LINE, BRAND)
+        text(slide, x + 50_000, sy + 50_000, sw - 80_000, sh - 80_000, [
+            (big, 15, True, BRAND),
             (small, 9, False, MUTED),
         ])
 
@@ -424,42 +450,52 @@ def s05_features(slide):
 
 
 def s06_process(slide):
-    set_title(slide, "Process / use-case", "One satellite pass: space → ranked site → crew at the right 250 m.")
+    set_title(slide, "Story & process flow", "One satellite pass — from space to a crew at the right 250 metres.")
     steps = [
-        ("1 Pass", "Every 6–12 days", "Sentinel-1 mm motion"),
-        ("2 Map", "Onto the asset", "1,355 pts → 87 sites"),
-        ("3 Rank", "What matters", "Speed · accel · consequence"),
-        ("4 Gemini", "Write ticket", "Tools → guard → checklist"),
-        ("5 Next", "Keep watching", "Act · next pass replay"),
+        ("1 · Pass", "Every 6–12 days", "Sentinel-1 measures mm motion through cloud & night"),
+        ("2 · Map", "Onto the corridor", "1,355 points matched to highway / metro / dam → 87×250 m sites"),
+        ("3 · Rank", "What matters", "Fast + accelerating + critical + good data rises; rain alone never alarms"),
+        ("4 · Gemini", "Write the ticket", "7 tools → reason → JSON → number guard → field checklist"),
+        ("5 · Next", "Keep watching", "Crew acts; next pass shows calm-down or worse"),
     ]
-    # Top row: 5 equal steps (55% height)
-    top_h = int(CONTENT_H * 0.52)
+    top_h = int(CONTENT_H * 0.48)
     sw = (CONTENT_W - 4 * GAP) // 5
     for i, (a, b, c) in enumerate(steps):
         x = MARGIN_X + i * (sw + GAP)
         card(slide, x, CONTENT_TOP, sw, top_h, SOFT if i % 2 == 0 else WHITE, LINE, BRAND)
-        text(slide, x + 40_000, CONTENT_TOP + 80_000, sw - 80_000, top_h - 120_000, [
-            (a, 11, True, BRAND),
+        text(slide, x + 30_000, CONTENT_TOP + 50_000, sw - 60_000, top_h - 80_000, [
+            (a, 10, True, BRAND),
             (b, 11, True, INK),
-            ("", 4, False, MUTED),
-            (c, 9, False, MUTED),
+            ("", 3, False, MUTED),
+            (c, 8, False, MUTED),
         ], align=PP_ALIGN.CENTER)
 
-    # Funnel strip
+    # Funnel + who benefits
     fy = CONTENT_TOP + top_h + GAP
     fh = CONTENT_H - top_h - GAP
-    card(slide, MARGIN_X, fy, CONTENT_W, fh, PANEL, LINE, BRAND)
-    text(slide, MARGIN_X + 80_000, fy + 40_000, CONTENT_W - 160_000, 220_000, [
+    left_w = int(CONTENT_W * 0.58)
+    card(slide, MARGIN_X, fy, left_w, fh, PANEL, LINE, BRAND)
+    text(slide, MARGIN_X + 70_000, fy + 40_000, left_w - 120_000, 200_000, [
         ("Demo funnel (labelled synthetic)", 10, True, BRAND),
     ])
-    funnel = [("62,330", "observations"), ("1,355", "radar points"), ("87", "250 m sites"), ("7", "CRIT/ELEV"), ("4", "Act today")]
-    fw = (CONTENT_W - 160_000) // 5
+    funnel = [("62,330", "obs"), ("1,355", "pts"), ("87", "sites"), ("7", "action"), ("4", "Act today")]
+    fw = (left_w - 140_000) // 5
     for i, (n, lab) in enumerate(funnel):
-        x = MARGIN_X + 80_000 + i * fw
-        text(slide, x, fy + 280_000, fw - 40_000, fh - 320_000, [
-            (n, 18, True, BAD if i >= 3 else BRAND),
+        x = MARGIN_X + 70_000 + i * fw
+        text(slide, x, fy + 280_000, fw - 20_000, fh - 320_000, [
+            (n, 16, True, BRAND),
             (lab, 9, False, MUTED),
         ], align=PP_ALIGN.CENTER)
+
+    rx = MARGIN_X + left_w + GAP
+    rw = CONTENT_W - left_w - GAP
+    card(slide, rx, fy, rw, fh, WHITE, LINE, BRAND)
+    text(slide, rx + 60_000, fy + 40_000, rw - 100_000, 200_000, [("Who it serves", 10, True, BRAND)])
+    bullets(slide, rx + 50_000, fy + 260_000, rw - 90_000, fh - 300_000, [
+        "Public: find problems while small — keep roads open",
+        "Engineers: short list + ticket (what / where / why)",
+        "Leaders: spend crews where risk is rising",
+    ], size=9)
 
 
 def s07_ui(slide):
@@ -481,64 +517,96 @@ def s07_ui(slide):
 
 
 def s08_architecture(slide):
-    set_title(slide, "Architecture", "One container · two storage backends · same tested maths.")
-    layers = [
-        ("EDGE", "Cloud Run · HTTPS · CSP/HSTS · rate limits · sessions · GCS state", INK),
-        ("UI", "React 19 · MapLibre · React Query · role-aware screens", BLUE),
-        ("API", "FastAPI · RBAC · CSRF · SSRF-safe fetch · audit", BRAND2),
-        ("ENGINE", "numpy · pandas · shapely — RPI, tiers, ETA bands, alerts, pass replay", BRAND),
-        ("GENAI", "Gemini tool loop · number guard · model fallback · Vertex / AI Studio", WARN),
-        ("DATA", "BigQuery (GEOGRAPHY, partitions) XOR local · USGS · provenance", SLATE),
+    set_title(slide, "Architecture story", "Request flow on Google Cloud — one container, two storage backends, same maths.")
+    # Top: horizontal data-plane story
+    flow = [
+        ("Ingest", "Data Hub validates\nfiles & HTTPS links"),
+        ("Store", "BigQuery or local\nGIS join · history"),
+        ("Compute", "Detection engine\nRPI · tier · band"),
+        ("Snapshot", "Pass replay\nalerts · trends"),
+        ("Serve", "UI + Gemini ticket\naudit trail"),
     ]
-    rh = (CONTENT_H - 5 * 40_000) // 6
-    for i, (name, body, accent) in enumerate(layers):
-        y = CONTENT_TOP + i * (rh + 40_000)
-        card(slide, MARGIN_X, y, CONTENT_W, rh, WHITE, LINE, accent)
-        text(slide, MARGIN_X + 90_000, y + 40_000, 1_200_000, rh - 60_000, [(name, 11, True, accent)])
-        text(slide, MARGIN_X + 1_400_000, y + 40_000, CONTENT_W - 1_550_000, rh - 60_000, [(body, 10, False, INK)])
+    top_h = int(CONTENT_H * 0.36)
+    nw = (CONTENT_W - 4 * GAP) // 5
+    for i, (t, b) in enumerate(flow):
+        x = MARGIN_X + i * (nw + GAP)
+        fill = BRAND if i == 4 else (SOFT if i % 2 == 0 else WHITE)
+        card(slide, x, CONTENT_TOP, nw, top_h, fill, LINE, BRAND)
+        text(slide, x + 30_000, CONTENT_TOP + 50_000, nw - 60_000, top_h - 80_000, [
+            (t, 11, True, WHITE if i == 4 else BRAND),
+            (b, 8, False, WHITE if i == 4 else MUTED),
+        ], align=PP_ALIGN.CENTER)
+
+    # Bottom: layers (unified brand accents — not rainbow)
+    layers = [
+        ("EDGE", "Cloud Run · HTTPS · CSP/HSTS · rate limits · sessions · GCS state"),
+        ("UI + API", "React/MapLibre · FastAPI · RBAC · CSRF · SSRF-safe fetch · audit"),
+        ("ENGINE", "Deterministic RPI / tiers / ETA bands / alerts — GenAI never computes these"),
+        ("GENAI", "Gemini tools → number guard → template fallback (Vertex or AI Studio)"),
+        ("DATA", "BigQuery partitions/GEOGRAPHY XOR local · USGS context only · provenance"),
+    ]
+    bot_y = CONTENT_TOP + top_h + GAP
+    bot_h = CONTENT_H - top_h - GAP
+    rh = (bot_h - 4 * 30_000) // 5
+    for i, (name, body) in enumerate(layers):
+        y = bot_y + i * (rh + 30_000)
+        card(slide, MARGIN_X, y, CONTENT_W, rh, WHITE, LINE, BRAND)
+        text(slide, MARGIN_X + 80_000, y + 30_000, 1_500_000, rh - 40_000, [(name, 10, True, BRAND)])
+        text(slide, MARGIN_X + 1_650_000, y + 30_000, CONTENT_W - 1_800_000, rh - 40_000, [(body, 9, False, INK)])
 
 
 def s09_tech(slide):
-    set_title(slide, "Technologies", "Google Cloud end-to-end. Gemini turns a risk score into an action.")
+    set_title(slide, "Technologies & GenAI flow", "Google Cloud end-to-end. Gemini turns a verified score into an action.")
+    # Story sentence
+    card(slide, MARGIN_X, CONTENT_TOP, CONTENT_W, 420_000, SOFT, LINE, BRAND)
+    text(slide, MARGIN_X + 80_000, CONTENT_TOP + 60_000, CONTENT_W - 160_000, 320_000, [
+        (
+            "Without GenAI an engineer gets “RPI 86 · CRITICAL”. With Gemini + our guard they get a ticket: "
+            "what is happening, likely cause (hypothesis), what to do by when, and a site checklist — every number from tools.",
+            10,
+            False,
+            INK,
+        ),
+    ])
+
+    mid_y = CONTENT_TOP + 420_000 + GAP
+    mid_h = int((CONTENT_H - 420_000 - GAP) * 0.42)
     nodes = [
         ("Ingest", "Cloud Run\nData Hub"),
         ("Store", "BigQuery\nGIS + history"),
-        ("Compute", "Cloud Run\nrisk engine"),
-        ("Explain", "Gemini\nVertex/Studio"),
-        ("Act", "Engineers\nmap + ticket"),
+        ("Compute", "Engine\nscores sites"),
+        ("Explain", "Gemini\n+ number guard"),
+        ("Act", "Map · ticket\n· audit"),
     ]
-    top_h = int(CONTENT_H * 0.32)
     nw = (CONTENT_W - 4 * GAP) // 5
     for i, (t, b) in enumerate(nodes):
         x = MARGIN_X + i * (nw + GAP)
-        fill = BRAND if i == 3 else (SOFT if i % 2 == 0 else WHITE)
-        ink = WHITE if i == 3 else INK
-        card(slide, x, CONTENT_TOP, nw, top_h, fill, LINE, BRAND2 if i == 3 else BRAND)
-        text(slide, x + 30_000, CONTENT_TOP + 50_000, nw - 60_000, top_h - 80_000, [
+        fill = BRAND if i == 3 else WHITE
+        card(slide, x, mid_y, nw, mid_h, fill, LINE, BRAND)
+        text(slide, x + 25_000, mid_y + 40_000, nw - 50_000, mid_h - 60_000, [
             (t, 11, True, WHITE if i == 3 else BRAND),
-            (b, 9, False, ink),
+            (b, 8, False, WHITE if i == 3 else MUTED),
         ], align=PP_ALIGN.CENTER)
 
-    bot_y = CONTENT_TOP + top_h + GAP
-    bot_h = CONTENT_H - top_h - GAP
+    bot_y = mid_y + mid_h + GAP
+    bot_h = FOOTER_TOP - bot_y - 20_000
     half = (CONTENT_W - GAP) // 2
-
     card(slide, MARGIN_X, bot_y, half, bot_h, WHITE, LINE, BRAND)
-    text(slide, MARGIN_X + 70_000, bot_y + 50_000, half - 120_000, 240_000, [("Gemini — what GenAI does", 11, True, BRAND)])
-    bullets(slide, MARGIN_X + 70_000, bot_y + 300_000, half - 120_000, bot_h - 340_000, [
-        "7 tools: metrics, history, outlook, rain, seismic, exposure, quality",
-        "Must call tools first → investigate → JSON → number guard",
-        "Rejects invented mm and collapse language",
-        "Fallback flash-latest → lite on 429/5xx; template always ships",
+    text(slide, MARGIN_X + 60_000, bot_y + 40_000, half - 100_000, 200_000, [("Gemini loop", 11, True, BRAND)])
+    bullets(slide, MARGIN_X + 50_000, bot_y + 240_000, half - 90_000, bot_h - 270_000, [
+        "7 read-only tools (metrics → quality)",
+        "Round 0 must call tools → investigate → JSON",
+        "Guard rejects invented mm / collapse language",
+        "Fallback models; template always ships",
     ], size=9)
 
-    card(slide, MARGIN_X + half + GAP, bot_y, half, bot_h, WHITE, LINE, BLUE)
-    text(slide, MARGIN_X + half + GAP + 70_000, bot_y + 50_000, half - 120_000, 240_000, [("GCP services", 11, True, BLUE)])
-    bullets(slide, MARGIN_X + half + GAP + 70_000, bot_y + 300_000, half - 120_000, bot_h - 340_000, [
+    card(slide, MARGIN_X + half + GAP, bot_y, half, bot_h, WHITE, LINE, BRAND)
+    text(slide, MARGIN_X + half + GAP + 60_000, bot_y + 40_000, half - 100_000, 200_000, [("GCP services", 11, True, BRAND)])
+    bullets(slide, MARGIN_X + half + GAP + 50_000, bot_y + 240_000, half - 90_000, bot_h - 270_000, [
+        "Cloud Run — SPA + API + engine + agent",
+        "BigQuery — partitions, spatial join, bytes cap",
         "Vertex AI / AI Studio — Gemini",
-        "BigQuery — partitions, ST_DWITHIN, bytes-billed cap",
-        "Cloud Run — one image: SPA + API + engine + agent",
-        "Secret Manager · GCS · IAM via ADC (no key files)",
+        "Secret Manager · GCS · ADC (no key files)",
     ], size=9)
 
 
