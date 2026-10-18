@@ -1,0 +1,612 @@
+/* Sign-in, account menu, dialogs and the Access page. Tokens come from index.css. */
+
+/* ---- sign-in: one viewport, no page scroll. The graphic fills leftover space. ------------ */
+html:has(.login),
+body:has(.login) {
+  overflow: hidden;
+  height: 100%;
+}
+.login {
+  height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(380px, 1.05fr) minmax(360px, 1fr);
+  background: var(--bg-canvas);
+}
+.login-brand {
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+  color: #fff;
+  background: #0b2a28;
+}
+.login-map {
+  position: absolute;
+  inset: 0;
+}
+.login-map-wait {
+  background: #0b2a28;
+}
+.login-map .maplibregl-ctrl-attrib {
+  display: none;
+}
+.login-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: 22px 24px 56px;
+  background: linear-gradient(180deg, rgba(8, 20, 22, 0.78) 0%, rgba(8, 20, 22, 0.28) 70%, transparent 100%);
+  pointer-events: none;
+}
+.login-callout {
+  position: absolute;
+  left: 16px;
+  bottom: 44px;
+  z-index: 2;
+  width: min(320px, calc(100% - 32px));
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 12px 14px 10px;
+  display: grid;
+  gap: 6px;
+}
+.login-callout header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.login-tier {
+  background: #C62828;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.login-state {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+.login-callout h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.login-callout p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.login-callout strong {
+  color: var(--text-primary);
+}
+.login-spark {
+  display: block;
+  width: 100%;
+  height: 36px;
+}
+.login-illust {
+  font-size: 11.5px !important;
+  color: var(--text-muted) !important;
+}
+.login-legend {
+  position: absolute;
+  right: 12px;
+  bottom: 44px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(20, 32, 43, 0.72);
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  backdrop-filter: blur(4px);
+}
+.login-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.login-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45);
+}
+.login-logo {
+  pointer-events: none;
+}
+.login-logo .brand-logo-mark {
+  box-shadow:
+    0 0 0 2px rgba(94, 234, 212, 0.35),
+    0 0 22px rgba(94, 234, 212, 0.45);
+}
+
+/* Login: highlight the pulse peak so the brand feels alive */
+.brand-logo-mark--pulse .brand-pulse-line {
+  animation: brand-pulse-glow 1.6s ease-in-out infinite;
+}
+.brand-logo-mark--pulse .brand-pulse-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: brand-pulse-blink 1.6s ease-in-out infinite;
+}
+.brand-logo-mark--pulse .brand-pulse-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: brand-pulse-ring 1.6s ease-out infinite;
+}
+.brand-logo-mark--pulse .brand-sat {
+  animation: brand-sat-blink 2.4s ease-in-out infinite;
+}
+@keyframes brand-pulse-glow {
+  0%,
+  100% {
+    stroke: #fff;
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  45%,
+  55% {
+    stroke: #5eead4;
+    filter: drop-shadow(0 0 4px rgba(94, 234, 212, 0.95));
+  }
+}
+@keyframes brand-pulse-blink {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.75);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+@keyframes brand-pulse-ring {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+@keyframes brand-sat-blink {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-logo-mark--pulse .brand-pulse-line,
+  .brand-logo-mark--pulse .brand-pulse-dot,
+  .brand-logo-mark--pulse .brand-pulse-ring,
+  .brand-logo-mark--pulse .brand-sat {
+    animation: none;
+  }
+  .brand-logo-mark--pulse .brand-pulse-dot {
+    opacity: 1;
+  }
+  .brand-logo-mark--pulse .brand-pulse-ring {
+    opacity: 0;
+  }
+}
+.login-brand h1 {
+  font-size: clamp(20px, 2.4vw, 28px);
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 10px 0 0;
+  max-width: 22ch;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+}
+.login-points {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  pointer-events: auto;
+}
+.login-points li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.login-points li svg {
+  flex: none;
+  opacity: 0.9;
+}
+.login-foot {
+  position: absolute;
+  left: 16px;
+  bottom: 36px;
+  z-index: 2;
+  margin: 0;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  max-width: 42ch;
+}
+.login-main {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 14px;
+}
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 28px;
+  display: grid;
+  gap: 14px;
+}
+.login-card h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+.login-card > p {
+  margin: -8px 0 0;
+}
+.login-card .field input {
+  width: 100%;
+}
+.login-submit {
+  width: 100%;
+  justify-content: center;
+  padding-block: 10px;
+  margin-top: 4px;
+}
+.login-help,
+.login-legal {
+  font-size: 12.5px;
+  margin: 0;
+  text-align: center;
+}
+.login-card .notice {
+  margin: 0;
+}
+.password-wrap {
+  position: relative;
+  display: block;
+}
+.password-wrap input {
+  padding-right: 42px;
+}
+.show-btn {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+}
+.fullscreen-state {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+}
+
+@media (max-height: 760px) and (min-width: 861px) {
+  .login-brand h1 {
+    font-size: 20px;
+  }
+  .login-points,
+  .login-foot,
+  .login-spark,
+  .login-illust {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .login {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 38vh) minmax(0, 1fr);
+  }
+  .login-hud {
+    padding: 12px 14px 24px;
+  }
+  .login-brand h1 {
+    font-size: 16px;
+    max-width: none;
+  }
+  .login-points,
+  .login-foot,
+  .login-legend,
+  .login-spark,
+  .login-illust {
+    display: none;
+  }
+  .login-callout {
+    left: 10px;
+    bottom: 10px;
+    width: min(280px, calc(100% - 20px));
+    padding: 8px 10px;
+  }
+  .login-callout h2 {
+    font-size: 12.5px;
+  }
+  .login-map .maplibregl-ctrl-bottom-right {
+    display: none;
+  }
+  .login-main {
+    padding: 16px 16px 20px;
+    justify-content: flex-start;
+    overflow: auto;
+  }
+  .login-card {
+    padding: 20px;
+    box-shadow: none;
+  }
+}
+
+/* ---- account menu ----------------------------------------------------------------------- */
+.account {
+  position: relative;
+}
+.account-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 4px 8px 4px 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+}
+.account-btn:hover,
+.account-btn[aria-expanded='true'] {
+  background: var(--bg-hover);
+}
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+.account-name {
+  max-width: 14ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13.5px;
+}
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 230px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  z-index: 60;
+}
+.account-who {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font: inherit;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+}
+.menu-item:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+.menu-note {
+  font-size: 12.5px;
+  padding: 6px 10px;
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .account-name {
+    display: none;
+  }
+}
+
+/* ---- dialog ----------------------------------------------------------------------------- */
+.modal {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  max-width: min(480px, calc(100vw - 32px));
+  width: 100%;
+  color: var(--text-primary);
+}
+.modal::backdrop {
+  background: rgba(20, 32, 43, 0.45);
+}
+.modal-card {
+  background: var(--bg-panel);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 20px 22px 22px;
+  display: grid;
+  gap: 14px;
+}
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.modal-head h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+/* ---- access page + shared bits ---------------------------------------------------------- */
+.card-pad {
+  padding: 12px 16px;
+}
+.btn-row.end {
+  justify-content: flex-end;
+}
+.secret {
+  display: block;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: var(--bg-subtle);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  user-select: all;
+  word-break: break-all;
+  color: var(--text-primary);
+}
+.kv.roles dd {
+  max-width: 60ch;
+}
+.page-notice {
+  margin-bottom: 14px;
+}
+
+/* ---- public data ------------------------------------------------------------------------ */
+.public-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.public-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display: grid;
+  gap: 12px;
+}
+.public-card header {
+  display: grid;
+  gap: 8px;
+}
+.public-card h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.public-card p {
+  margin: 0;
+}
+.public-card .cite {
+  font-size: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+/* ---- BigQuery connection checks --------------------------------------------------------- */
+.doctor-box {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-top: 12px;
+}
+.doctor-box > summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 2px 0;
+}
+.doctor-box[open] > summary {
+  margin-bottom: 10px;
+}
+.doctor {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.doctor li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.doctor li svg {
+  flex: none;
+  margin-top: 2px;
+}
+.doctor p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.doctor .doc-fix {
+  color: var(--text-primary);
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+.doc-word {
+  font-weight: 500;
+  font-size: 12px;
+  margin-left: 6px;
+}
+.doc-pass svg,
+.doc-pass .doc-word {
+  color: var(--ok);
+}
+.doc-warn svg,
+.doc-warn .doc-word {
+  color: var(--warn);
+}
+.doc-fail svg,
+.doc-fail .doc-word {
+  color: var(--bad);
+}
+.doc-skip svg,
+.doc-skip .doc-word {
+  color: var(--text-muted);
+}

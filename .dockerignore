@@ -1,0 +1,17 @@
+.git
+**/node_modules
+**/dist
+**/__pycache__
+**/.venv
+**/.pytest_cache
+**/.env
+**/.env.*
+!**/.env.example
+data/workspace
+data/state
+data/cache
+data/public
+docs
+scripts
+infra
+backend/tests

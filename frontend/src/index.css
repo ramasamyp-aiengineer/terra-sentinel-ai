@@ -1,0 +1,172 @@
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+/* Design tokens: see docs/UX_UI_DESIGN_SYSTEM.md. The app chrome is white; the map stays satellite. */
+:root {
+  --bg-app: #ffffff;
+  --bg-canvas: #f5f7fa;
+  --bg-panel: #ffffff;
+  --bg-subtle: #f1f4f8;
+  --bg-hover: #ebf0f5;
+  --border: #e1e6ec;
+  --border-strong: #c7d0da;
+
+  --text-primary: #14202b;
+  --text-secondary: #46566a;
+  --text-muted: #5e6c7e;
+  --text-inverse: #ffffff;
+
+  --brand: #0f766e;
+  --brand-hover: #0b5f58;
+  --brand-soft: #e6f4f2;
+  --brand-ring: rgba(15, 118, 110, 0.28);
+
+  --tier-stable: #2a7f4f;
+  --tier-watch: #b58900;
+  --tier-elevated: #B85209;
+  --tier-critical: #c62828;
+  --tier-weak: #6b7785;
+
+  --ok: #1f7a4a;
+  --ok-soft: #e6f5ec;
+  --warn: #9a5b00;
+  --warn-soft: #fff4dc;
+  --bad: #b3261e;
+  --bad-soft: #fdeceb;
+  --info: #1d6fa5;
+  --info-soft: #e8f2fa;
+
+  --series-motion: #0f766e;
+  --series-baseline: #8795a6;
+  --series-rain: #3b82a0;
+
+  --shadow-sm: 0 1px 2px rgba(20, 32, 43, 0.06);
+  --shadow-md: 0 4px 16px rgba(20, 32, 43, 0.1);
+  --shadow-lg: 0 12px 40px rgba(20, 32, 43, 0.18);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --font-ui: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+body {
+  background: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+input,
+select {
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+a {
+  color: var(--brand);
+}
+code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--bg-subtle);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.muted {
+  color: var(--text-muted);
+}
+.secondary {
+  color: var(--text-secondary);
+}
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -48px;
+  z-index: 100;
+  background: var(--brand);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  transition: top 0.15s;
+}
+.skip-link:focus {
+  top: 8px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

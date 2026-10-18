@@ -1,0 +1,16 @@
+with modules: `api/`, `services/detection/`
+POST /sites/{id}/workorder`
+Graceful degradation: if rain API fails
+Function calling with typed tools:
+Tools return JSON from deterministic services only
+System prompt: role, tier vocabulary
+Structured output schema (JSON)
+Work order fields: tier, asset/chainage
+Post-validation: every number in the output
+Block phrases: "will collapse"
+If data-degraded, the agent must say so
+Temperature low; deterministic where possible
+Fallback template work order if Vertex errors
+Log every tool call and response for audit
+Automated check script: extract numbers from output
+Public demo is read-mostly; rate-limit the agent endpoint

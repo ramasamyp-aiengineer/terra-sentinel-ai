@@ -1,0 +1,38 @@
+semi-synthetic dataset seeded around real coordinates
+Asset geometries (OSM road/rail extract
+Criticality attribute per asset
+Quality gate: coherence
+Spatial filter: only points within asset buffer
+Cluster nearby moving points into sites
+Remove isolated single-point outliers
+Velocity (mm/month and mm/yr) over rolling windows
+60-day cumulative displacement
+Acceleration ratio: recent 30d
+Persistence: consecutive epochs
+Seasonality flag
+States: Stable
+Tier mapping documented in one table
+Asset-specific thresholds in config
+Two models: constant-velocity
+Output ETA **band**
+Confidence: function of coherence
+Always attach assumptions string
+Never output a failure date
+RPI = f(kinematic score
+Confidence **reduces** rank
+Explain-why-ranked-#1 payload
+Unit tests: velocity, acceleration, ETA, tier mapping
+Golden-case fixtures
+Test that low-coherence input never produces Critical
+Config via env vars
+CORS configured
+/healthz` endpoint
+GET /regions` · `GET /regions/{id}/summary`
+GET /sites?region=
+GET /sites/{id}` (metrics
+GET /sites/{id}/timeseries
+GET /sites/{id}/context`
+Viewport queries: never return full dataset
+Server-side clustering at low zoom
+Cache hot BigQuery results
+Precompute `site_metrics` in batch

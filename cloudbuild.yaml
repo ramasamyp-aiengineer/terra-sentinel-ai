@@ -1,0 +1,22 @@
+# Build the production image and push to Artifact Registry.
+# Invoked by scripts/deploy_cloud_run.ps1 (or: gcloud builds submit --config cloudbuild.yaml).
+substitutions:
+  _REGION: asia-southeast1
+  _REPO: terrasentinel
+  _IMAGE: terrasentinel
+  _TAG: latest
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:${_TAG}
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:$BUILD_ID
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:${_TAG}
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_IMAGE}:$BUILD_ID
+      - .
+timeout: 1800s
+options:
+  logging: CLOUD_LOGGING_ONLY

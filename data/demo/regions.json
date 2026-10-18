@@ -1,0 +1,79 @@
+[
+ {
+  "region_id": "IN",
+  "parent_id": null,
+  "name": "India",
+  "level": "country",
+  "center": [
+   79.0,
+   22.0
+  ],
+  "zoom": 4.2
+ },
+ {
+  "region_id": "IN-UK",
+  "parent_id": "IN",
+  "name": "Uttarakhand",
+  "level": "state",
+  "center": [
+   79.57,
+   30.55
+  ],
+  "zoom": 8.5
+ },
+ {
+  "region_id": "IN-UK-CHM",
+  "parent_id": "IN-UK",
+  "name": "Chamoli District",
+  "level": "district",
+  "center": [
+   79.575,
+   30.545
+  ],
+  "zoom": 11.2
+ },
+ {
+  "region_id": "IN-TN",
+  "parent_id": "IN",
+  "name": "Tamil Nadu",
+  "level": "state",
+  "center": [
+   80.2,
+   13.0
+  ],
+  "zoom": 8.5
+ },
+ {
+  "region_id": "IN-TN-CHN",
+  "parent_id": "IN-TN",
+  "name": "Chennai Metropolitan Area",
+  "level": "district",
+  "center": [
+   80.275,
+   13.083
+  ],
+  "zoom": 13.0
+ },
+ {
+  "region_id": "IN-JH",
+  "parent_id": "IN",
+  "name": "Jharkhand",
+  "level": "state",
+  "center": [
+   86.4,
+   23.75
+  ],
+  "zoom": 8.5
+ },
+ {
+  "region_id": "IN-JH-DHN",
+  "parent_id": "IN-JH",
+  "name": "Dhanbad Mining Belt",
+  "level": "district",
+  "center": [
+   86.412,
+   23.737
+  ],
+  "zoom": 13.2
+ }
+]

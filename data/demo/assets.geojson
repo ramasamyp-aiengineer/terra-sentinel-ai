@@ -1,0 +1,137 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "asset_id": "NH58-DEMO",
+    "name": "NH-58 Himalayan Corridor (demo)",
+    "asset_type": "HIGHWAY",
+    "region_id": "IN-UK-CHM",
+    "criticality": 0.95,
+    "consequence_note": "Sole arterial access to the upper valley; high daily transit volume.",
+    "length_km": 7.92,
+    "source": "DEMO-SYNTHETIC"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      79.535,
+      30.535
+     ],
+     [
+      79.56,
+      30.545
+     ],
+     [
+      79.575,
+      30.565
+     ],
+     [
+      79.6,
+      30.575
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "asset_id": "SR12-DEMO",
+    "name": "State Road 12 - alternate route (demo)",
+    "asset_type": "HIGHWAY",
+    "region_id": "IN-UK-CHM",
+    "criticality": 0.4,
+    "consequence_note": "Low-traffic alternate route; detour available.",
+    "length_km": 9.19,
+    "source": "DEMO-SYNTHETIC"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      79.54,
+      30.515
+     ],
+     [
+      79.57,
+      30.528
+     ],
+     [
+      79.598,
+      30.545
+     ],
+     [
+      79.625,
+      30.552
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "asset_id": "METRO4-DEMO",
+    "name": "Urban Metro Line 4 Tunnel Corridor - Chennai (demo)",
+    "asset_type": "METRO",
+    "region_id": "IN-TN-CHN",
+    "criticality": 0.9,
+    "consequence_note": "Four-lane arterial road and mid-rise commercial buildings above the tunnel drive.",
+    "length_km": 2.7,
+    "source": "DEMO-SYNTHETIC"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      80.265,
+      13.079
+     ],
+     [
+      80.272,
+      13.083
+     ],
+     [
+      80.279,
+      13.085
+     ],
+     [
+      80.288,
+      13.088
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "asset_id": "DAM-DEMO",
+    "name": "Tailings Dam Crest (demo)",
+    "asset_type": "DAM",
+    "region_id": "IN-JH-DHN",
+    "criticality": 0.95,
+    "consequence_note": "Downstream community and haul road within the breach runout zone.",
+    "length_km": 1.61,
+    "source": "DEMO-SYNTHETIC"
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      86.405,
+      23.735
+     ],
+     [
+      86.412,
+      23.738
+     ],
+     [
+      86.42,
+      23.737
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,17 @@
+Vite + React + TypeScript
+Design tokens from `docs/UX_UI_DESIGN_SYSTEM.md` as CSS variables
+Fonts: IBM Plex Sans / Mono
+State: lightweight (React Query
+Env-based API URL
+Smooth zoom/pan: country
+Progressive disclosure by zoom level
+Corridor lines colored by worst tier
+Point layer (MapLibre native circle layers)
+Click → select site → open drawer
+Legend + "Demonstration data" label when synthetic
+Region Command Dashboard
+Site Intelligence drawer with tabs
+Work Order panel (checklist, limitations, citations)
+Charts: displacement line with threshold line
+Tier badge component used everywhere
+"Grounded brief" label with timestamp

@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TerraSentinel AI · Pitch deck · Google Cloud AI Builder Cup 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --canvas: #f5f8f7; --panel2: #f4f7f6;
+  --line: #e2e8e6; --line2: #cdd7d4;
+  --ink: #0f1d1b; --muted: #475854; --subtle: #7b8b87;
+  --brand: #0f766e; --brand2: #0d9488; --brand-soft: #e7f4f1; --brand-line: #b9ddd6;
+  --bad: #c62828; --bad-soft: #fdecec; --warn: #b45309; --warn-soft: #fdf2e3;
+  --ok: #15803d; --ok-soft: #e8f5ec; --slate: #64748b; --slate-soft: #eef2f6;
+  --blue: #1d4ed8; --blue-soft: #e8eefc;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #d9e0de; height: 100%; overflow: hidden; }
+body { font-family: Inter, "Segoe UI", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+.deck { position: fixed; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: center center; }
+.slide { position: absolute; inset: 0; width: 1920px; height: 1080px; padding: 60px 88px 90px; display: none; overflow: hidden; background: #fff; }
+.slide::before { content: ""; position: absolute; left: 0; top: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--brand), var(--brand2) 60%, #5eead4); }
+.slide.active { display: block; }
+.slide > * { position: relative; }
+.foot { position: absolute !important; left: 88px; right: 88px; bottom: 30px; display: flex; justify-content: space-between; align-items: center;
+  font-size: 16px; color: var(--subtle); border-top: 1px solid var(--line); padding-top: 13px; }
+.foot .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--muted); }
+.foot .brand img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+.foot .num { font-family: "JetBrains Mono", monospace; font-size: 15px; }
+
+.kicker { font-size: 16px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--brand); margin-bottom: 10px; }
+h1 { font-size: 72px; line-height: 1.04; font-weight: 800; letter-spacing: -.035em; }
+h2 { font-size: 46px; line-height: 1.12; font-weight: 750; letter-spacing: -.028em; max-width: 1700px; }
+h3 { font-size: 23px; font-weight: 700; letter-spacing: -.012em; }
+h4 { font-size: 19px; font-weight: 700; }
+.lead { font-size: 25px; line-height: 1.48; color: var(--muted); margin-top: 18px; }
+.hl { color: var(--brand); } .bad { color: var(--bad); } .warn { color: var(--warn); } .ok { color: var(--ok); } .muted { color: var(--muted); }
+.mono { font-family: "JetBrains Mono", monospace; }
+.row { display: flex; gap: 22px; } .col { display: flex; flex-direction: column; gap: 14px; }
+.grid { display: grid; gap: 14px; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px;
+  box-shadow: 0 1px 2px rgba(15,29,27,.04), 0 10px 28px -16px rgba(15,29,27,.16); }
+.card.tight { padding: 13px 16px; border-radius: 12px; }
+.card.soft { background: var(--panel2); box-shadow: none; }
+.card.brand { background: var(--brand-soft); border-color: var(--brand-line); box-shadow: none; }
+.card.bad { background: var(--bad-soft); border-color: #f3c4c4; box-shadow: none; }
+.card.warn { background: var(--warn-soft); border-color: #f1d3a8; box-shadow: none; }
+.card h3 { margin-bottom: 6px; }
+.card p, .card li { font-size: 18.5px; line-height: 1.42; color: var(--muted); }
+.card ul { padding-left: 20px; } .card li { margin-bottom: 3px; }
+.card b { color: var(--ink); }
+.label { font-size: 14px; letter-spacing: .11em; text-transform: uppercase; font-weight: 700; color: var(--subtle); }
+.chip { display: inline-flex; align-items: center; font-size: 15.5px; font-weight: 600; padding: 4px 11px; border-radius: 7px;
+  border: 1px solid var(--line2); color: var(--muted); background: #fff; white-space: nowrap; }
+.chip.m { font-family: "JetBrains Mono", monospace; font-size: 14.5px; font-weight: 500; }
+.chip.b { background: var(--brand-soft); border-color: var(--brand-line); color: var(--brand); }
+.chip.r { background: var(--bad-soft); border-color: #f3c4c4; color: var(--bad); }
+.chip.a { background: var(--warn-soft); border-color: #f1d3a8; color: var(--warn); }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.frame { border-radius: 12px; overflow: hidden; border: 1px solid var(--line2); background: var(--canvas); box-shadow: 0 24px 60px -30px rgba(15,29,27,.4); position: relative; }
+.frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+.frame .cap { position: absolute; left: 12px; top: 12px; background: rgba(15,29,27,.82); color: #fff; font-size: 14px; font-weight: 600; padding: 5px 10px; border-radius: 7px; letter-spacing: .02em; }
+.stat b { display: block; white-space: nowrap; font-size: 46px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+.stat span { display: block; font-size: 17px; color: var(--muted); margin-top: 8px; line-height: 1.3; }
+.src { font-size: 15px; color: var(--subtle); line-height: 1.35; }
+
+table.t { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 17.5px; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+table.t th { text-align: left; font-size: 13.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--brand); background: var(--brand-soft); padding: 10px 14px; border-bottom: 1px solid var(--brand-line); }
+table.t td { padding: 9px 14px; border-top: 1px solid var(--line); color: var(--muted); vertical-align: top; line-height: 1.38; }
+table.t tr:first-child td { border-top: 0; }
+table.t td:first-child { color: var(--ink); font-weight: 700; }
+table.t td b { color: var(--ink); }
+
+pre.code { font-family: "JetBrains Mono", monospace; font-size: 16px; line-height: 1.55; color: #1e2d2a; background: #f4f7f6; border: 1px solid var(--line2);
+  border-left: 4px solid var(--brand); border-radius: 10px; padding: 13px 18px; white-space: pre; }
+pre.code .k { color: var(--brand); font-weight: 600; } pre.code .s { color: #15803d; } pre.code .c { color: #8a9a96; }
+pre.code .f { color: #1d4ed8; } pre.code .n { color: #b45309; font-weight: 600; }
+.formula { font-family: "JetBrains Mono", monospace; font-size: 19.5px; color: var(--ink); line-height: 1.62; }
+.formula .v { color: var(--brand); font-weight: 700; } .formula .n { color: var(--warn); font-weight: 700; } .formula .c { color: var(--subtle); font-size: 15.5px; }
+
+.step { display: flex; gap: 14px; align-items: flex-start; }
+.step .n { flex: none; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; font-size: 17px; background: var(--brand); color: #fff; }
+.step h4 { margin-bottom: 3px; } .step p { font-size: 18px; line-height: 1.42; color: var(--muted); }
+.flow { display: grid; align-items: stretch; }
+.flow .node { background: #fff; border: 1px solid var(--line2); border-radius: 12px; padding: 12px 14px; }
+.flow .node .label { margin-bottom: 4px; font-size: 13px; }
+.flow .node h4 { font-size: 18.5px; margin-bottom: 3px; }
+.flow .node p { font-size: 16px; line-height: 1.38; color: var(--muted); }
+.flow .arr { display: grid; place-items: center; color: var(--brand); font-size: 26px; font-weight: 800; }
+
+.tier { display: inline-flex; padding: 3px 9px; border-radius: 6px; font-weight: 800; font-size: 14px; letter-spacing: .05em; white-space: nowrap; }
+.t-crit { background: var(--bad-soft); color: var(--bad); border: 1px solid #f3c4c4; }
+.t-elev { background: var(--warn-soft); color: var(--warn); border: 1px solid #f1d3a8; }
+.t-watch { background: #fdf8e1; color: #8a6d00; border: 1px solid #ecdc9a; }
+.t-stab { background: var(--ok-soft); color: var(--ok); border: 1px solid #bfe3c9; }
+.t-weak { background: var(--slate-soft); color: var(--slate); border: 1px solid #d5dde6; }
+
+.progress { position: fixed; left: 0; bottom: 0; height: 4px; background: var(--brand); transition: width .3s; z-index: 10; }
+.hint { position: fixed; right: 16px; bottom: 12px; font: 12px Inter, sans-serif; color: rgba(15,29,27,.45); z-index: 10; transition: opacity .6s; }
+.dl { position: fixed; top: 16px; right: 16px; z-index: 20; display: inline-flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 16px; border-radius: 999px; background: var(--brand); color: #fff; text-decoration: none;
+  font: 600 14px/1 Inter, sans-serif; letter-spacing: .01em; box-shadow: 0 8px 24px -10px rgba(15,118,110,.7); }
+.dl:hover { background: #0b5f59; }
+.dl svg { width: 16px; height: 16px; }
+@media print {
+  @page { size: 1920px 1080px; margin: 0; }
+  html, body { margin: 0 !important; padding: 0 !important; overflow: visible !important; height: auto !important; background: #fff !important; }
+  .deck { display: contents; }
+  .slide { position: relative !important; display: block !important; width: 1920px; height: 1080px; overflow: hidden;
+    break-before: page; page-break-before: always; break-after: auto; page-break-after: auto;
+    break-inside: avoid; page-break-inside: avoid; }
+  .slide:first-of-type { break-before: auto; page-break-before: auto; }
+  .card, .frame { box-shadow: none !important; }
+  .progress, .hint, .dl { display: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+<!-- 1 · Cover -->
+<section class="slide" data-title="Cover">
+  <div class="row" style="align-items:center; gap:56px; height:100%;">
+    <div style="flex:0 0 790px;">
+      <div class="row" style="align-items:center; gap:18px; margin-bottom:30px;">
+        <img src="shots/logo-mark.jpg" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;box-shadow:0 12px 30px -10px rgba(15,118,110,.6);" />
+        <div>
+          <div style="font-size:34px;font-weight:800;letter-spacing:-.02em;">TerraSentinel <span class="hl">AI</span></div>
+          <div class="label" style="color:var(--brand);margin-top:4px;">Ground-motion early warning for infrastructure</div>
+        </div>
+      </div>
+      <h1>Satellites see the ground move. <span class="hl">Gemini tells engineers where to go first.</span></h1>
+      <p class="lead">Roads, metro tunnels and dams can sink or slide by a few millimetres for months before anything visible happens. TerraSentinel reads those satellite measurements after every pass, ranks the places that need a person, and uses Gemini on Google Cloud to write an inspection ticket an engineer can act on today.</p>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr); gap:12px; margin-top:28px;">
+        <div class="card tight stat"><b class="hl">87 → 7</b><span>sites to the few that need a crew today</span></div>
+        <div class="card tight stat"><b>Gemini</b><span>writes the ticket, from verified numbers</span></div>
+        <div class="card tight stat"><b>Google Cloud</b><span>Cloud Run · BigQuery · Vertex AI</span></div>
+      </div>
+      <div class="card brand" style="margin-top:24px; padding:16px 22px; display:flex; align-items:center; gap:18px;">
+        <div style="flex:none; width:56px; height:56px; border-radius:14px; background:var(--brand); color:#fff; display:grid; place-items:center; font-weight:800; font-size:22px;">AR</div>
+        <div>
+          <div class="label" style="color:var(--brand);">Team</div>
+          <div style="font-size:26px; font-weight:800; letter-spacing:-.01em;">Agent Ram</div>
+          <div style="font-size:18px; color:var(--muted);">Ramasamy P · Google Cloud AI Builder Cup 2026 · JAPAC · Sustainability</div>
+        </div>
+      </div>
+    </div>
+    <div class="frame" style="flex:1; height:900px;">
+      <img src="shots/c-hero-map.png" alt="Chamoli District corridors on satellite imagery" style="object-position:42% center;" />
+      <div class="card tight" style="position:absolute; left:24px; top:24px; width:360px;">
+        <div class="label">Chamoli District · Uttarakhand</div>
+        <div class="row" style="gap:22px; margin-top:8px;">
+          <div class="stat"><b style="font-size:38px;">69</b><span>sites watched</span></div>
+          <div class="stat"><b style="font-size:38px;" class="bad">4</b><span>act today</span></div>
+          <div class="stat"><b style="font-size:38px;" class="bad">2</b><span>critical</span></div>
+        </div>
+      </div>
+      <div class="card tight" style="position:absolute; right:24px; top:330px; width:400px; border-left:5px solid var(--bad);">
+        <div class="row" style="gap:10px; align-items:center;"><span class="tier t-crit">CRITICAL</span><span style="font-weight:700;">NH-58 · KM 3.25–3.50</span></div>
+        <p style="margin-top:8px;">Moving <b>6.2 mm a month</b>, twice as fast as before. Threshold window <b>35–64 days</b> if this trend continues. Not a failure date.</p>
+      </div>
+      <div class="card tight" style="position:absolute; left:24px; bottom:56px; width:470px; border-left:5px solid var(--brand);">
+        <div class="label" style="color:var(--brand);">Gemini work order · Chennai Metro Line 4</div>
+        <p style="margin-top:6px; color:var(--ink);">“Dispatch an inspection crew within 24 hours…” · <b>numbers verified against tools</b></p>
+      </div>
+      <span class="src" style="position:absolute; right:12px; bottom:10px; background:rgba(255,255,255,.85); padding:2px 8px; border-radius:6px;">Imagery © Esri, Maxar, Earthstar Geographics · demo data</span>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · Problem -->
+<section class="slide" data-title="Problem">
+  <div class="kicker">The problem and the decision we own</div>
+  <h2>Ground creeps for months before anyone can see it. <span class="muted">Nobody ranks which creep matters, so crews go to the wrong place.</span></h2>
+  <div class="row" style="margin-top:28px; gap:24px; align-items:stretch;">
+    <div class="col" style="flex:0 0 610px; gap:12px;">
+      <div class="card tight" style="border-left:4px solid var(--bad);"><h4>Mountain highways · NH-58, Uttarakhand</h4><p>Sole access to the upper valley. One slope slip cuts off towns, pilgrims and supply trucks.</p></div>
+      <div class="card tight" style="border-left:4px solid var(--warn);"><h4>Metro tunnels · Chennai</h4><p>Settlement above the tunnel drive, under roads and buildings. Tight tolerances, dense exposure.</p></div>
+      <div class="card tight" style="border-left:4px solid var(--slate);"><h4>Dams and tailings · Dhanbad mining belt</h4><p>Crest settlement and toe movement with severe downstream consequence.</p></div>
+      <div class="card brand" style="padding:18px 22px;">
+        <div class="label" style="color:var(--brand);">The one decision we support</div>
+        <p style="font-size:22px;color:var(--ink);font-weight:700;margin-top:6px;line-height:1.35;">After this satellite pass, which 250 m segment needs an engineer, why, and how soon?</p>
+      </div>
+    </div>
+    <div class="col" style="flex:1; gap:14px;">
+      <table class="t">
+        <thead><tr><th style="width:240px;">Today’s option</th><th>Why it fails the decision</th></tr></thead>
+        <tbody>
+          <tr><td>Raw InSAR portal</td><td>Thousands of moving points per pass, with no link to assets, no consequence and no “who goes today”.</td></tr>
+          <tr><td>Rainfall alarm</td><td>Treats the trigger as the hazard, so it fires over stable ground and buries real creep.</td></tr>
+          <tr><td>Generic AI chatbot</td><td>Writes fluent risk text but invents millimetres and failure dates. Nothing to audit.</td></tr>
+          <tr><td>Scheduled walk-over</td><td>The calendar ignores which segment is accelerating right now.</td></tr>
+        </tbody>
+      </table>
+      <div class="grid" style="grid-template-columns:1fr 1fr; gap:14px;">
+        <div class="card" style="border-top:4px solid var(--ok);"><h3 class="ok">We do</h3><ul><li>Progressive creep and settlement on linear assets</li><li>Rank, explain and track between passes</li><li>Report a threshold-crossing window, with its assumptions</li></ul></div>
+        <div class="card" style="border-top:4px solid var(--bad);"><h3 class="bad">We refuse to claim</h3><ul><li>Failure dates or collapse prediction</li><li>Sudden events between 6–12 day passes</li><li>A certified safety decision</li></ul></div>
+      </div>
+    </div>
+  </div>
+  <div class="card soft" style="margin-top:20px; padding:16px 22px;">
+    <div class="row" style="align-items:center; gap:20px;">
+      <div class="label" style="flex:0 0 190px; line-height:1.4;">One pass on the demo dataset</div>
+      <div class="flow" style="flex:1; grid-template-columns:1fr 36px 1fr 36px 1fr 36px 1fr 36px 1fr;">
+        <div class="node"><div class="stat"><b style="font-size:36px;">62,330</b><span>displacement observations</span></div></div><div class="arr">→</div>
+        <div class="node"><div class="stat"><b style="font-size:36px;">1,355</b><span>radar points · 46 passes</span></div></div><div class="arr">→</div>
+        <div class="node"><div class="stat"><b style="font-size:36px;">87</b><span>250 m sites on 4 assets</span></div></div><div class="arr">→</div>
+        <div class="node"><div class="stat"><b style="font-size:36px;" class="warn">7</b><span>CRITICAL or ELEVATED</span></div></div><div class="arr">→</div>
+        <div class="node" style="background:var(--bad-soft);border-color:#f3c4c4;"><div class="stat"><b style="font-size:36px;" class="bad">4</b><span>“Act today” in Chamoli</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Story -->
+<section class="slide" data-title="The story">
+  <div class="kicker">The whole story, in plain words</div>
+  <h2>One satellite pass, from space to a crew at the right place.</h2>
+  <div class="grid" style="grid-template-columns:repeat(5,1fr); gap:16px; margin-top:28px;">
+    <div class="card" style="padding:0; overflow:hidden; display:flex; flex-direction:column;">
+      <div style="height:280px; background:linear-gradient(160deg,#0f2b3a,#0f766e); display:grid; place-items:center; color:#fff;">
+        <svg viewBox="0 0 120 120" width="130" height="130" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="4"><rect x="46" y="40" width="28" height="28" rx="4"/><path d="M46 54H18M74 54h28"/><rect x="6" y="46" width="14" height="16"/><rect x="100" y="46" width="14" height="16"/><path d="M60 68v14" /><path d="M40 98q20-14 40 0" opacity=".7"/><path d="M30 110q30-20 60 0" opacity=".45"/></g></svg>
+      </div>
+      <div style="padding:16px 18px;"><div class="label hl">1 · Every 6–12 days</div><h3 style="margin-top:6px;">A satellite passes over</h3><p>ESA’s Sentinel-1 radar measures how much the ground moved since last time, to the millimetre, even through cloud and at night.</p></div>
+    </div>
+    <div class="card" style="padding:0; overflow:hidden; display:flex; flex-direction:column;">
+      <div class="frame" style="height:280px; border-radius:0; border:0; box-shadow:none;"><img src="shots/c-hero-map.png" alt="" style="object-position:45% 45%;" /></div>
+      <div style="padding:16px 18px;"><div class="label hl">2 · After each pass</div><h3 style="margin-top:6px;">We map it onto the road</h3><p>1,355 radar points are matched to the highway, tunnel or dam they sit on and cut into 87 short sections of 250 m.</p></div>
+    </div>
+    <div class="card" style="padding:0; overflow:hidden; display:flex; flex-direction:column;">
+      <div class="frame" style="height:280px; border-radius:0; border:0; box-shadow:none;"><img src="shots/c-command.png" alt="" style="object-position:0% 92%;" /></div>
+      <div style="padding:16px 18px;"><div class="label hl">3 · Ranked</div><h3 style="margin-top:6px;">We rank what matters</h3><p>Fast, speeding up, on an important road, with good data? It goes to the top. Rain alone never raises the alarm.</p></div>
+    </div>
+    <div class="card" style="padding:0; overflow:hidden; display:flex; flex-direction:column; border-color:var(--brand-line);">
+      <div class="frame" style="height:280px; border-radius:0; border:0; box-shadow:none;"><img src="shots/c-workorder-ai.png" alt="" style="object-position:0% 30%;" /></div>
+      <div style="padding:16px 18px; background:var(--brand-soft); flex:1;"><div class="label hl">4 · Gemini</div><h3 style="margin-top:6px;">Gemini reasons, then writes the ticket</h3><p>It reasons over the facts from its tools, summarises what is happening, and creates the inspection ticket. Every number is checked before anyone sees it.</p></div>
+    </div>
+    <div class="card" style="padding:0; overflow:hidden; display:flex; flex-direction:column;">
+      <div class="frame" style="height:280px; border-radius:0; border:0; box-shadow:none;"><img src="shots/c-trends.png" alt="" style="object-position:100% 92%;" /></div>
+      <div style="padding:16px 18px;"><div class="label hl">5 · The next pass</div><h3 style="margin-top:6px;">A crew goes, we keep watching</h3><p>The engineer works the checklist and records the action. The next pass shows whether the ground calmed down or got worse.</p></div>
+    </div>
+  </div>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px;">
+    <div class="card" style="border-top:4px solid var(--brand);"><h3>For people who use the road</h3><p>Problems are found while they are still small, so roads, trains and water supplies are more likely to stay open.</p></div>
+    <div class="card" style="border-top:4px solid var(--warn);"><h3>For engineers</h3><p>A short list instead of thousands of dots, and a ticket that says what to check, where, and why.</p></div>
+    <div class="card" style="border-top:4px solid var(--blue);"><h3>For decision-makers</h3><p>Crews and money go where risk is rising. Every decision can be traced back to the satellite data behind it.</p></div>
+  </div>
+  <div class="card brand" style="margin-top:20px; display:flex; align-items:center; gap:18px; padding:18px 24px;"><span class="chip b" style="font-size:17px; white-space:nowrap;">In one line</span><p style="color:var(--ink); font-size:21px;">A pass leaves 1,355 moving points. The engine decides which few matter, and <b>Gemini tells the engineer what to inspect.</b></p></div>
+</section>
+
+<!-- 4 · Google Cloud and Gemini -->
+<section class="slide" data-title="Google Cloud and Gemini">
+  <div class="kicker">Google Cloud and generative AI usage</div>
+  <h2>Designed for Google Cloud end to end. <span class="hl">Gemini turns a risk score into an action.</span></h2>
+  <div class="flow" style="grid-template-columns:1fr 34px 1fr 34px 1fr 34px 1.15fr 34px 1fr; margin-top:24px;">
+    <div class="node"><div class="label">Ingest</div><h4>Cloud Run</h4><p>Data Hub validates every file and link</p></div><div class="arr">→</div>
+    <div class="node" style="background:var(--blue-soft);border-color:#c5d3f5;"><div class="label" style="color:var(--blue);">Store</div><h4>BigQuery</h4><p>GIS join of points to assets, daily history</p></div><div class="arr">→</div>
+    <div class="node"><div class="label">Compute</div><h4>Cloud Run</h4><p>tested risk engine scores every site</p></div><div class="arr">→</div>
+    <div class="node" style="background:linear-gradient(135deg,#0f766e,#0d9488);border-color:#0f766e;color:#fff;"><div class="label" style="color:#ccfbf1;">Explain · GenAI</div><h4 style="color:#fff;">Gemini · Vertex AI</h4><p style="color:#e6fffa;">investigates with tools, writes the work order</p></div><div class="arr">→</div>
+    <div class="node"><div class="label">Act</div><h4>Engineers</h4><p>map, Act today list, ticket, audit trail</p></div>
+  </div>
+  <div class="row" style="margin-top:20px; gap:22px; align-items:stretch;">
+    <div class="card" style="flex:1.25; border:2px solid var(--brand); padding:20px 24px;">
+      <div class="row" style="align-items:center; gap:12px;"><span class="chip b" style="font-size:17px;">Gemini</span><h3 style="margin:0;">What generative AI does in TerraSentinel</h3></div>
+      <div class="grid" style="grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;">
+        <div class="step"><div class="n">1</div><div><h4>Investigates like an analyst</h4><p>Function calling with 7 read-only tools: metrics, history, outlook, rain, earthquakes, exposure and data quality. The first round must use tools.</p></div></div>
+        <div class="step"><div class="n">2</div><div><h4>Writes what people read</h4><p>Plain-language summary, likely cause (stated as a hypothesis), recommended action with urgency, and a site-specific field checklist.</p></div></div>
+        <div class="step"><div class="n">3</div><div><h4>Is checked before it is shown</h4><p>Every number must match a tool result. Failure-date and certainty language is rejected. On any failure, a labelled template is shown instead.</p></div></div>
+        <div class="step"><div class="n">4</div><div><h4>Stays available</h4><p>Temperature 0.1 and a time budget. Model fallback from <span class="mono">gemini-flash-latest</span> to lighter models on 429 or 5xx errors.</p></div></div>
+      </div>
+      <div class="card brand tight" style="margin-top:14px;"><p style="color:var(--ink);"><b>Live proof:</b> a Gemini ticket drafted during development made 6 tool calls and had 7 numbers verified against them. Its recommendation: <i>“Dispatch an inspection crew within 24 hours to check the tunnel corridor and surface assets.”</i></p></div>
+    </div>
+    <div class="card" style="flex:1; padding:20px 24px;">
+      <div class="row" style="align-items:center; gap:12px;"><span class="chip" style="font-size:17px;background:var(--blue-soft);border-color:#c5d3f5;color:var(--blue);">Google Cloud</span><h3 style="margin:0;">Services and why</h3></div>
+      <table style="width:100%; border-collapse:collapse; margin-top:12px; font-size:18px;">
+        <tr><td style="padding:9px 0; font-weight:800; width:150px; vertical-align:top;">Vertex AI</td><td class="muted" style="padding:9px 0;">Gemini for production, through the project’s own credentials (ADC). AI Studio key for development. <b style="color:var(--brand);">Gemini live today.</b></td></tr>
+        <tr style="border-top:1px solid var(--line);"><td style="padding:9px 0; font-weight:800; vertical-align:top;">BigQuery</td><td class="muted" style="padding:9px 0;">9 tables, partitioned by date and clustered; <span class="mono">ST_DWITHIN</span> spatial join; views for today’s act list and tier history; a cost cap on every query. <b style="color:var(--warn);">Built, one flag to switch on.</b></td></tr>
+        <tr style="border-top:1px solid var(--line);"><td style="padding:9px 0; font-weight:800; vertical-align:top;">Cloud Run</td><td class="muted" style="padding:9px 0;">One container serves the app, API, engine and agent over HTTPS, and scales to zero. <b style="color:var(--warn);">Container ready, public URL next.</b></td></tr>
+        <tr style="border-top:1px solid var(--line);"><td style="padding:9px 0; font-weight:800; vertical-align:top;">IAM · ADC</td><td class="muted" style="padding:9px 0;">Service-account access with no key files, which also satisfies org policies that block key creation.</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 46px 1fr 46px 1fr; gap:0; margin-top:20px; align-items:stretch;">
+    <div class="card" style="border-top:4px solid var(--line);"><div class="label">Without generative AI</div><h3 style="margin-top:6px;">An engineer gets a number</h3><p>“NH-58 KM 3.25–3.50 · RPI 86 · CRITICAL.” They still have to dig through charts to work out why, what to check and how soon.</p></div>
+    <div class="arr" style="display:grid;place-items:center;font-size:30px;">→</div>
+    <div class="card" style="border-top:4px solid var(--brand); background:var(--brand-soft);"><div class="label hl">With Gemini</div><h3 style="margin-top:6px;">An engineer gets a ticket</h3><p>What is happening, the likely cause, what to do and by when, and a field checklist for that exact site, in plain language.</p></div>
+    <div class="arr" style="display:grid;place-items:center;font-size:30px;">→</div>
+    <div class="card" style="border-top:4px solid var(--blue);"><div class="label" style="color:var(--blue);">With our guard</div><h3 style="margin-top:6px;">The ticket can be trusted</h3><p>No invented numbers and no promised failure dates. Each ticket carries the tool calls behind it, so anyone can see where every number came from.</p></div>
+  </div>
+</section>
+
+<!-- 5 · Data -->
+<section class="slide" data-title="Data">
+  <div class="kicker">Data: what we use, where it comes from, how it is connected</div>
+  <h2>Six sources, one validated path in. <span class="muted">Same data model locally or in BigQuery.</span></h2>
+  <table class="t" style="margin-top:24px;">
+    <thead><tr><th style="width:200px;">Source</th><th style="width:430px;">Where it comes from</th><th style="width:500px;">How we connect</th><th>Role in the score</th></tr></thead>
+    <tbody>
+      <tr><td>InSAR points + time series</td><td>Sentinel-1, processed into persistent scatterers by the owner’s InSAR provider</td><td>Data Hub upload or HTTPS link · CSV, long or wide (EGMS style)</td><td><span class="chip b">core measurement</span></td></tr>
+      <tr><td>Rainfall</td><td><b>Open-Meteo</b> forecast and archive APIs (no key), or owner gauges</td><td><span class="mono">fetch_rain</span> at each region centre · CSV upload</td><td><span class="chip a">amplifier only, capped at +50%</span></td></tr>
+      <tr><td>Assets</td><td>Owner GIS: line, type, criticality 0–1, consequence, buffer</td><td>GeoJSON LineString / MultiLineString</td><td><span class="chip b">consequence</span></td></tr>
+      <tr><td>Earthquakes</td><td><b>USGS</b> feeds (M2.5+ 30 d) and FDSN (M5+ 5 y), public domain</td><td><span class="mono">public_catalog</span> via the safe fetcher, cached CSV</td><td><span class="chip r">context, never scored</span></td></tr>
+      <tr><td>Regions · basemap</td><td>Country → state → district hierarchy · Esri World Imagery</td><td>JSON / CSV · MapLibre raster tiles allow-listed in the CSP</td><td><span class="chip">scope and display</span></td></tr>
+    </tbody>
+  </table>
+  <div class="row" style="margin-top:18px; gap:22px; align-items:stretch;">
+    <div class="col" style="flex:1.08; gap:12px;">
+      <div class="flow" style="grid-template-columns:1fr 32px 1fr 32px 1fr;">
+        <div class="node"><div class="label">1 · Connect</div><h4 class="mono" style="font-size:16.5px;">fetch_url</h4><p>https only; resolves the host and refuses private and metadata IPs; checks every redirect; size cap and timeout</p></div><div class="arr">→</div>
+        <div class="node"><div class="label">2 · Validate</div><h4>Check, then import</h4><p>detects kind and layout; plain-language report; bad rows listed; unsupported formats refused</p></div><div class="arr">→</div>
+        <div class="node" style="background:var(--blue-soft);border-color:#c5d3f5;"><div class="label" style="color:var(--blue);">3 · Store</div><h4 class="mono" style="font-size:16.5px;">TS_DATA_BACKEND</h4><p><b>local</b> files or <b>bigquery</b> tables; provenance row for every dataset</p></div>
+      </div>
+      <div class="card tight">
+        <div class="label">BigQuery layout</div>
+        <div class="chips" style="margin-top:8px;">
+          <span class="chip m">points · cluster geom, region</span><span class="chip m">timeseries · partition date</span><span class="chip m">rain · partition date</span>
+          <span class="chip m">assets · GEOGRAPHY</span><span class="chip m">asset_segments · 250 m</span><span class="chip m">site_snapshots · partition as_of</span>
+          <span class="chip m">alert_actions · audit</span><span class="chip m">datasets · provenance</span><span class="chip m">regions</span>
+        </div>
+        <p style="margin-top:8px;font-size:16.5px;">Each job sets <span class="mono">maximum_bytes_billed</span>. BigQuery uses Google Cloud credentials (ADC); the Gemini key is never a BigQuery credential.</p>
+      </div>
+    </div>
+    <div class="frame" style="flex:0 0 640px; height:378px;"><img src="shots/c-datahub.png" alt="Data Hub" /><span class="cap">Data Hub · validate first, then import</span></div>
+  </div>
+</section>
+
+<!-- 6 · Engine -->
+<section class="slide" data-title="Engine">
+  <div class="kicker">The risk engine · deterministic, tested, explainable</div>
+  <h2>Measure, score, project. <span class="muted">Plain rules first, then the exact maths.</span></h2>
+  <div class="grid" style="grid-template-columns:1.05fr 1fr 0.95fr; gap:20px; margin-top:22px; align-items:stretch;">
+    <div class="col" style="gap:12px;">
+      <div class="card brand tight"><div class="label hl">1 · Measure</div><p style="color:var(--ink);margin-top:4px;"><b>How fast is it moving, and is it speeding up?</b></p></div>
+      <table class="t" style="font-size:16.5px;">
+        <tbody>
+          <tr><td style="width:150px;">Recent speed</td><td>slope over the last <b>60 days</b>, mm/month</td></tr>
+          <tr><td>Baseline</td><td>slope from <b>270 to 90 days ago</b></td></tr>
+          <tr><td>Acceleration</td><td>|recent| ÷ max(|baseline|, 0.5)</td></tr>
+          <tr><td>Persistence</td><td>steps in the same direction, smoothed</td></tr>
+          <tr><td>Seasonal</td><td>a big swing that mostly recovers</td></tr>
+          <tr><td>Site series</td><td>median of the points in each 250 m section</td></tr>
+        </tbody>
+      </table>
+      <div class="card tight">
+        <div class="label">Can we trust the data?</div>
+        <div class="formula" style="font-size:17px;margin-top:4px;">conf = .30·coh + .15·epochs + .20·points + .20·agree + .15·SNR</div>
+        <p style="font-size:16px;margin-top:4px;">Capped at 0.30 for low coherence or fewer than 3 points, so weak data can never be CRITICAL.</p>
+      </div>
+    </div>
+    <div class="col" style="gap:12px;">
+      <div class="card brand tight"><div class="label hl">2 · Score</div><p style="color:var(--ink);margin-top:4px;"><b>Moving × important × trustworthy</b></p></div>
+      <div class="card">
+        <div class="formula" style="font-size:18px;">
+          <span class="v">kin</span> = 100·(<span class="n">.4</span>speed + <span class="n">.3</span>accel + <span class="n">.3</span>progress)<br/>
+          <span class="v">hazard</span> = kin·(1 + 0.5·rain<sub>14d</sub>/200 mm)<br/>
+          <span class="v">RPI</span> = hazard × (0.5+0.5·criticality)<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;× (0.5+0.5·confidence)
+        </div>
+        <p class="src" style="margin-top:6px;">speed = |recent| ÷ 5·creep · accel = (ratio−1) ÷ 3 · progress = window ÷ threshold · all clipped 0–1</p>
+      </div>
+      <div class="card bad tight"><ul><li>Slow and far from the limit: × <b>0.2</b></li><li>Seasonal swing: × <b>0.35</b></li><li>Weak data: capped at <b>15</b></li><li>Earthquakes: shown, <b>never scored</b></li></ul></div>
+      <table class="t" style="font-size:15.5px;">
+        <tbody>
+          <tr><td style="width:130px;"><span class="tier t-crit">CRITICAL</span></td><td>near the limit, or speeding up on an important asset with heavy rain</td></tr>
+          <tr><td><span class="tier t-elev">ELEVATED</span></td><td>speeding up, or steady creep on an important asset</td></tr>
+          <tr><td><span class="tier t-watch">WATCH</span></td><td>seasonal, or creep on a lesser asset</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col" style="gap:12px;">
+      <div class="card brand tight"><div class="label hl">3 · Project</div><p style="color:var(--ink);margin-top:4px;"><b>If nothing changes, how long until the limit?</b></p></div>
+      <div class="card">
+        <div class="formula" style="font-size:18px;">
+          <span class="v">ETA<sub>const</sub></span> = remaining ÷ speed<br/>
+          <span class="v">ETA<sub>accel</sub></span> = root of a·t²+b·t+c = T<br/>
+          band = [min, max] ≤ <span class="n">365</span> d<br/>
+          close? → [<span class="n">.75</span>, <span class="n">1.35</span>]·mid
+        </div>
+      </div>
+      <table class="t" style="font-size:15.5px;">
+        <thead><tr><th>Asset</th><th>Demo limit</th><th>Creep</th></tr></thead>
+        <tbody>
+          <tr><td>Highway</td><td>40 mm / 180 d</td><td>2.0 mm/mo</td></tr>
+          <tr><td>Metro</td><td>25 mm / 180 d</td><td>1.5 mm/mo</td></tr>
+          <tr><td>Dam</td><td>30 mm / 180 d</td><td>1.0 mm/mo</td></tr>
+        </tbody>
+      </table>
+      <div class="card warn tight"><p style="color:var(--ink);"><b>Always a band, never a date.</b> The 0.4 / 0.3 / 0.3 weights, the rain cap and these limits are demo defaults. The asset owner replaces them with their own standard. Assumes the trend continues.</p></div>
+    </div>
+  </div>
+  <div class="row" style="gap:14px; margin-top:16px; align-items:stretch;">
+    <div class="label" style="flex:0 0 170px; align-self:center; line-height:1.4;">What-if on the NH-58 site</div>
+    <div class="card tight" style="flex:1;border-left:4px solid var(--bad);"><p><b>As observed</b> → RPI <b>86</b> <span class="tier t-crit">CRITICAL</span></p></div>
+    <div class="card tight" style="flex:1;border-left:4px solid var(--warn);"><p><b>Minor road (0.3)</b> → <b>57</b> <span class="tier t-elev">ELEVATED</span></p></div>
+    <div class="card tight" style="flex:1;border-left:4px solid var(--slate);"><p><b>Poor radar data</b> → <b>≤ 15</b> <span class="tier t-weak">WEAK</span></p></div>
+    <div class="card tight" style="flex:1;border-left:4px solid var(--ok);"><p><b>Heavy rain, stable</b> → <b>≈ 1</b> <span class="tier t-stab">STABLE</span></p></div>
+  </div>
+</section>
+
+<!-- 7 · Worked example -->
+<section class="slide" data-title="Worked example">
+  <div class="kicker">One site, end to end, as the product shows it</div>
+  <h2>NH-58 KM 3.25–3.50: <span class="bad">CRITICAL</span>, RPI 86. <span class="muted">Threshold window 35–64 days if this trend continues.</span></h2>
+  <div class="row" style="margin-top:22px; gap:22px; align-items:stretch;">
+    <div class="frame" style="flex:0 0 430px; height:798px;"><img src="shots/c-site-now.png" alt="Site panel, Now tab" /></div>
+    <div class="col" style="flex:1; gap:14px;">
+      <div class="row" style="gap:18px; align-items:stretch;">
+        <table class="t" style="flex:1; font-size:17px;">
+          <thead><tr><th style="width:140px;">Step</th><th>Calculation</th><th style="width:96px;">Result</th></tr></thead>
+          <tbody>
+            <tr><td>Inputs</td><td>6.2 vs 2.8 mm/mo · 2.2× · 29.7/40 mm · 213 mm rain · crit 0.95 · conf 0.97</td><td></td></tr>
+            <tr><td>Kinematic</td><td>100 × (.4·0.62 + .3·0.40 + .3·0.74)</td><td><b>59.4</b></td></tr>
+            <tr><td>Hazard</td><td>59.4 × (1 + 0.5 × 1.0) · rain capped</td><td><b>89.1</b></td></tr>
+            <tr><td>RPI</td><td>89.1 × 0.975 × 0.985</td><td><b class="hl">85.7</b></td></tr>
+            <tr><td>Tier</td><td>threshold approach · crit ≥ 0.5</td><td><span class="tier t-crit">CRITICAL</span></td></tr>
+            <tr><td>Outlook</td><td>51 d constant · 44 d accelerating · widened · not a failure date</td><td><b>35–64 d</b></td></tr>
+          </tbody>
+        </table>
+        <div class="frame" style="flex:0 0 470px; height:410px;"><img src="shots/c-site-trend.png" alt="Site trend: displacement, rain and scatterer spread" /></div>
+      </div>
+      <div class="frame" style="height:250px;"><img src="shots/c-trends.png" alt="Trends and History" style="object-position:center 88%;" /><span class="cap">Trends &amp; History · 16 passes re-computed from data</span></div>
+      <div class="grid" style="grid-template-columns:repeat(4,1fr); gap:12px;">
+        <div class="card tight stat"><b style="font-size:34px;">61 → 86</b><span>this site’s RPI since the last pass</span></div>
+        <div class="card tight stat"><b style="font-size:34px;">3 → 7</b><span>action sites over 16 passes</span></div>
+        <div class="card tight stat"><b style="font-size:34px;">M5.1</b><span>largest nearby quake: context only</span></div>
+        <div class="card tight stat"><b style="font-size:34px;" class="hl">same</b><span>numbers in UI, tools and work order</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · Gemini agent -->
+<section class="slide" data-title="Gemini">
+  <div class="kicker">Generative AI, engineered for trust</div>
+  <h2>Gemini investigates with tools. <span class="hl">A guard verifies every number before an engineer sees it.</span></h2>
+  <div class="row" style="margin-top:24px; gap:24px; align-items:stretch;">
+    <div class="col" style="flex:0 0 900px; gap:12px;">
+      <div class="frame" style="height:330px;"><img src="shots/c-workorder.png" alt="Live Gemini work order, header and evidence" /><span class="cap" style="left:auto;right:12px;">Live ticket · 6 tool calls · 7 numbers verified</span></div>
+      <div class="frame" style="height:436px; border:2px solid var(--brand);"><img src="shots/c-workorder-ai.png" alt="Gemini-written outlook, hypothesis, action and checklist" /><span class="cap" style="left:auto;right:12px;top:auto;bottom:12px;background:var(--brand);">Written by Gemini · cause as a hypothesis · action · field checklist</span></div>
+    </div>
+    <div class="col" style="flex:1; gap:12px;">
+      <div class="flow" style="grid-template-columns:1fr 26px 1fr 26px 1fr 26px 1fr;">
+        <div class="node"><div class="label">Round 0</div><h4>ANY</h4><p>must call tools</p></div><div class="arr">→</div>
+        <div class="node"><div class="label">1–2</div><h4>AUTO</h4><p>investigate</p></div><div class="arr">→</div>
+        <div class="node"><div class="label">Round 3</div><h4>NONE</h4><p>write JSON</p></div><div class="arr">→</div>
+        <div class="node" style="background:var(--brand-soft);border-color:var(--brand-line);"><div class="label">Guard</div><h4>Verify</h4><p>pass or template</p></div>
+      </div>
+      <div class="card tight">
+        <div class="label">7 read-only tools, the only source of numbers</div>
+        <div class="chips" style="margin-top:8px;">
+          <span class="chip m">get_site_metrics</span><span class="chip m">get_displacement_history</span><span class="chip m">get_outlook</span><span class="chip m">get_rainfall_context</span>
+          <span class="chip m">get_seismic_context</span><span class="chip m">get_asset_exposure</span><span class="chip m">get_data_quality</span>
+        </div>
+      </div>
+      <div class="card bad tight">
+        <h4 class="bad">The guard rejects</h4>
+        <ul style="margin-top:4px;"><li>any mm, days, ×, %, km or point count not in a tool result</li><li>“will collapse”, “guaranteed”, “failure date”, “no risk”</li><li>unhedged causes; weak data without a warning</li></ul>
+      </div>
+      <div class="card tight" style="border-left:4px solid var(--ok);"><p style="color:var(--ink);">“…an estimated time-to-threshold of <b>23 to 41 days</b> if the current motion continues.”</p><p class="ok" style="font-weight:700;">passed: quoted from the live ticket, values from get_outlook</p></div>
+      <div class="card tight" style="border-left:4px solid var(--bad);"><p style="color:var(--ink);">“…the tunnel will fail in <b>21 days</b>.”</p><p class="bad" style="font-weight:700;">rejected: unknown number and failure language</p></div>
+      <div class="card brand tight"><p style="color:var(--ink);"><b>Resilience:</b> the model chain falls back from <span class="mono">gemini-flash-latest</span> on 429 or 5xx errors. This ticket came from <span class="mono">flash-lite</span>. Any failure still ships a labelled template.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · Architecture -->
+<section class="slide" data-title="Architecture">
+  <div class="kicker">Architecture on Google Cloud · engineering quality · the ask</div>
+  <h2>One container, two storage back-ends, <span class="hl">the same tested maths.</span></h2>
+  <div class="row" style="margin-top:22px; gap:22px; align-items:stretch;">
+    <div class="col" style="flex:1.15; gap:8px;">
+      <div class="card tight" style="display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;border-left:5px solid #0f1d1b;"><span class="mono" style="font-weight:700;">Edge</span><p><b>Cloud Run</b> · HTTPS · CSP and HSTS · rate limits · session cookie</p></div>
+      <div class="card tight" style="display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;border-left:5px solid #1d4ed8;"><span class="mono" style="font-weight:700;">UI</span><p><b>React 19</b> · MapLibre satellite map · React Query · role-aware screens</p></div>
+      <div class="card tight" style="display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;border-left:5px solid #0d9488;"><span class="mono" style="font-weight:700;">API</span><p><b>FastAPI</b> · RBAC viewer / analyst / admin · CSRF · SSRF-safe fetch · audit log</p></div>
+      <div class="card tight" style="display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;border-left:5px solid #0f766e;background:var(--brand-soft);"><span class="mono" style="font-weight:700;">Engine</span><p><b>numpy · pandas · shapely</b> · metrics, RPI, tiers, bands, alerts, pass replay</p></div>
+      <div class="card tight" style="display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;border-left:5px solid #b45309;"><span class="mono" style="font-weight:700;">GenAI</span><p><b>Gemini</b> · tool loop · number guard · model fallback · AI Studio or Vertex AI</p></div>
+      <div class="card tight" style="display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:center;border-left:5px solid #64748b;"><span class="mono" style="font-weight:700;">Data</span><p><b>BigQuery</b> (GEOGRAPHY, partitions, snapshots) or local · USGS store · provenance</p></div>
+      <div class="flow" style="grid-template-columns:1fr 26px 1fr 26px 1fr 26px 1fr 26px 1fr; margin-top:6px;">
+        <div class="node"><h4>Ingest</h4><p>validate</p></div><div class="arr">→</div>
+        <div class="node" style="background:var(--blue-soft);border-color:#c5d3f5;"><h4>Store</h4><p>BigQuery</p></div><div class="arr">→</div>
+        <div class="node" style="background:var(--brand-soft);border-color:var(--brand-line);"><h4>Compute</h4><p>engine</p></div><div class="arr">→</div>
+        <div class="node"><h4>Snapshot</h4><p>history</p></div><div class="arr">→</div>
+        <div class="node"><h4>Serve</h4><p>UI + Gemini</p></div>
+      </div>
+    </div>
+    <div class="col" style="flex:1; gap:12px;">
+      <div class="card">
+        <h3>Engineering invariants</h3>
+        <ul>
+          <li>GenAI never computes risk, tier or outlook</li>
+          <li>History is re-run from data, so every past score is reproducible</li>
+          <li>Public data is context only and never moves a score</li>
+          <li>Every dataset has provenance; every alert action is audited</li>
+          <li>BigQuery jobs carry a bytes-billed cap; credentials come from ADC, never key files</li>
+        </ul>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="card tight" style="border-top:4px solid var(--ok);"><div class="label ok">Verified</div><p style="margin-top:4px;">349 backend tests · security controls · UI on a running server · live USGS fetch · <b>live Gemini work order</b></p></div>
+        <div class="card tight" style="border-top:4px solid var(--warn);"><div class="label warn">Next</div><p style="margin-top:4px;">Cloud Run URL · BigQuery on a real project · partner InSAR · OIDC / IAP sign-in · field validation study</p></div>
+      </div>
+      <div class="card brand" style="padding:18px 22px;">
+        <p style="font-size:22px;color:var(--ink);font-weight:800;line-height:1.3;">Every ranked site comes with its formula, its data and its limits.</p>
+        <p style="margin-top:8px;color:var(--ink);"><b>Buyer:</b> the asset-integrity or geotechnical team at a highway, metro, dam or mine. They buy a shorter list: 1,355 points become 7 sites. The same rank, explain and inspect loop fits any linear asset.</p>
+        <p style="margin-top:6px;color:var(--ink);"><b>Ask:</b> review the live demo, the 3-minute video and the repository.</p>
+        <p class="src" style="margin-top:6px;">Team Agent Ram · Ramasamy P</p>
+      </div>
+    </div>
+  </div>
+  <div class="row" style="margin-top:18px; gap:22px; align-items:stretch;">
+    <div class="card soft" style="flex:1.15; padding:14px 18px;">
+      <div class="label">Deployment on Google Cloud</div>
+      <div style="display:grid; grid-template-columns:150px 30px 1fr 30px 300px; align-items:center; margin-top:10px;">
+        <div class="flow"><div class="node" style="text-align:center;"><h4>Engineers</h4><p>browser · role</p></div></div>
+        <div class="flow"><div class="arr">→</div></div>
+        <div class="node" style="background:#fff;border:2px solid var(--brand);border-radius:12px;padding:10px 12px;">
+          <div class="label" style="color:var(--brand);">Cloud Run service · one image</div>
+          <div class="chips" style="margin-top:6px;"><span class="chip m">React SPA</span><span class="chip m">FastAPI</span><span class="chip m">detection engine</span><span class="chip m">Gemini agent</span></div>
+          <p class="src" style="margin-top:6px;">service account via ADC · no key files</p>
+        </div>
+        <div class="flow"><div class="arr">→</div></div>
+        <div class="col" style="gap:6px;">
+          <div class="chip" style="background:var(--blue-soft);border-color:#c5d3f5;color:var(--blue);justify-content:center;">BigQuery · dataset + views</div>
+          <div class="chip a" style="justify-content:center;">Gemini · AI Studio / Vertex AI</div>
+          <div class="chip" style="justify-content:center;">Open-Meteo · USGS · Esri (safe egress)</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="flex:1; padding:14px 18px;">
+      <div class="label">Security and operations</div>
+      <div class="chips" style="margin-top:10px;">
+        <span class="chip">scrypt passwords</span><span class="chip">hashed sessions</span><span class="chip">RBAC</span><span class="chip">CSRF + Origin check</span>
+        <span class="chip">SSRF guard</span><span class="chip">CSP · HSTS</span><span class="chip">rate limits</span><span class="chip">login throttling</span>
+        <span class="chip">request IDs</span><span class="chip">audit log</span><span class="chip">BQ doctor</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · Thank you -->
+<section class="slide" data-title="Thank you">
+  <div class="row" style="align-items:center; gap:60px; height:100%;">
+    <div style="flex:1;">
+      <div class="row" style="align-items:center; gap:18px; margin-bottom:34px;">
+        <img src="shots/logo-mark.jpg" alt="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;" />
+        <div style="font-size:30px;font-weight:800;">TerraSentinel <span class="hl">AI</span></div>
+      </div>
+      <h1 style="font-size:92px;">Thank you.</h1>
+      <p class="lead" style="font-size:26px; max-width:900px;">Which 250 metres should an engineer inspect today? The engine ranks them. Gemini writes the ticket, and every number is checked.</p>
+      <div class="chips" style="margin-top:22px;">
+        <span class="chip b" style="font-size:17px;">Gemini · Vertex AI</span><span class="chip" style="font-size:17px;">BigQuery</span><span class="chip" style="font-size:17px;">Cloud Run</span><span class="chip" style="font-size:17px;">Sentinel-1 InSAR</span>
+      </div>
+      <div class="grid" style="grid-template-columns:1fr 1fr; gap:14px; margin-top:22px; max-width:900px;">
+        <div class="card tight"><div class="label">Who pays</div><p style="margin-top:4px;color:var(--ink);">Asset-integrity and geotechnical teams at highway, metro, dam and mine operators.</p></div>
+        <div class="card tight"><div class="label">What they buy</div><p style="margin-top:4px;color:var(--ink);">Engineer attention. 1,355 radar points become 7 sites to review.</p></div>
+      </div>
+      <p class="src" style="margin-top:18px; font-size:17px;">Same loop on any linear asset: rank, explain, inspect, record, next pass. Ask: review the live demo, the 3-minute video and the repository.</p>
+    </div>
+    <div class="card" style="flex:0 0 640px; padding:40px 44px; border:2px solid var(--brand);">
+      <div class="label" style="color:var(--brand);">Team</div>
+      <div style="font-size:54px; font-weight:800; letter-spacing:-.03em; margin-top:6px;">Agent Ram</div>
+      <div style="height:1px; background:var(--line); margin:26px 0;"></div>
+      <div class="col" style="gap:20px;">
+        <div><div class="label">Name</div><div style="font-size:30px; font-weight:700; margin-top:4px;">Ramasamy P</div></div>
+        <div><div class="label">Email</div><div class="mono" style="font-size:26px; margin-top:4px; color:var(--brand);">ramp21052000@gmail.com</div></div>
+        <div><div class="label">Phone</div><div class="mono" style="font-size:26px; margin-top:4px;">+91 90250 32130</div></div>
+      </div>
+      <div style="height:1px; background:var(--line); margin:26px 0;"></div>
+      <p class="src" style="font-size:16px;">Google Cloud AI Builder Cup 2026 · JAPAC · Sustainability</p>
+    </div>
+  </div>
+</section>
+
+</div>
+<div class="progress" id="progress"></div>
+<a class="dl" id="download" href="TerraSentinel-AI-Pitch.pdf" download="TerraSentinel-AI-Pitch.pdf">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></svg>
+  Download PDF
+</a>
+<div class="hint">← → navigate · F fullscreen · D download PDF · #1 … #10</div>
+
+<script>
+const slides = [...document.querySelectorAll(".slide")];
+slides.forEach((s, i) => {
+  if (i === 0) return;
+  const f = document.createElement("div");
+  f.className = "foot";
+  f.innerHTML = `<span class="brand"><img src="shots/logo-mark.jpg" alt=""/>TerraSentinel AI · Team Agent Ram · Google Cloud AI Builder Cup 2026</span><span class="num">${String(i + 1).padStart(2, "0")} / ${String(slides.length).padStart(2, "0")}</span>`;
+  s.appendChild(f);
+});
+let cur = Math.min(slides.length - 1, Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+const deck = document.getElementById("deck");
+function show(n) {
+  cur = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, i) => s.classList.toggle("active", i === cur));
+  document.getElementById("progress").style.width = `${((cur + 1) / slides.length) * 100}%`;
+  history.replaceState(null, "", `#${cur + 1}`);
+}
+function fit() {
+  const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  deck.style.transform = `translate(-50%, -50%) scale(${s})`;
+}
+addEventListener("resize", fit);
+addEventListener("keydown", (e) => {
+  if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); show(cur + 1); }
+  else if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); show(cur - 1); }
+  else if (e.key === "Home") show(0);
+  else if (e.key === "End") show(slides.length - 1);
+  else if (e.key.toLowerCase() === "f") document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  else if (e.key.toLowerCase() === "d" || e.key.toLowerCase() === "p") document.getElementById("download").click();
+});
+addEventListener("click", (e) => { if (!e.target.closest("a")) show(cur + (e.clientX > innerWidth / 3 ? 1 : -1)); });
+addEventListener("hashchange", () => show((parseInt(location.hash.slice(1), 10) || 1) - 1));
+fit();
+show(cur);
+setTimeout(() => { document.querySelector(".hint").style.opacity = "0"; }, 4000);
+</script>
+</body>
+</html>

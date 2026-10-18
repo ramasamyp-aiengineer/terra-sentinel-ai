@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Node
+node_modules/
+dist/
+frontend/dist/
+
+# Env / secrets (never commit)
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*service-account*.json
+credentials*.json
+**/secrets/
+.terrasentinel/
+
+# Local caches / runtime
+data/cache/
+data/workspace/
+data/state/
+data/public/
+*.log
+deploy_out.txt
+deploy_run.txt
+docs/pitch/_deploy_log.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Cursor / local agent noise
+.cursor/
+agent-transcripts/
