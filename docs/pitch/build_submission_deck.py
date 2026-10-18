@@ -274,13 +274,18 @@ def s01_team(slide):
 
     # Restore template geometry if a prior build collapsed the shape
     target.left = 146_600
-    target.top = 2_920_000
+    target.top = 2_850_000  # just under Cup hero art
     target.width = 8_760_000
-    target.height = 1_700_000  # ends ~4.62M — clear of footer at 5.09M
+    target.height = 1_450_000  # ends ~4.30M — well clear of footer at 5.09M
 
     tf = target.text_frame
     tf.clear()
     tf.word_wrap = True
+    tf.auto_size = None
+    try:
+        tf.vertical_anchor = MSO_ANCHOR.TOP
+    except Exception:
+        pass
     rows = [
         ("TEAM DETAILS  ·  AI BUILDER CUP 2026  ·  JAPAC  ·  SUSTAINABILITY", 11, True, BRAND),
         ("", 6, False, MUTED),
