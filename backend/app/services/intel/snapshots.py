@@ -115,11 +115,24 @@ def warm(n: int = MAX_PASSES) -> None:
 _warm_thread: threading.Thread | None = None
 
 
-def warm_in_background(n: int = MAX_PASSES) -> None:
+def warm_passes() -> int:
+    """How many historical passes to pre-compute. BigQuery mode stays lean so live UI wins the lock."""
+    try:
+        from app.core.config import settings
+
+        if settings.data_backend.lower() == "bigquery":
+            return 4
+    except Exception:  # noqa: BLE001
+        pass
+    return MAX_PASSES
+
+
+def warm_in_background(n: int | None = None) -> None:
     global _warm_thread
     if _warm_thread and _warm_thread.is_alive():
         return
-    _warm_thread = threading.Thread(target=_safe_warm, args=(n,), daemon=True, name="ts-warm")
+    count = warm_passes() if n is None else n
+    _warm_thread = threading.Thread(target=_safe_warm, args=(count,), daemon=True, name="ts-warm")
     _warm_thread.start()
 
 

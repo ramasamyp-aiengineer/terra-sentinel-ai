@@ -292,6 +292,50 @@ body:has(.login) {
   margin: 0;
   text-align: center;
 }
+.login-cred {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--accent, #1a6b4a) 35%, transparent);
+  background: color-mix(in srgb, var(--accent, #1a6b4a) 8%, #fff);
+  border-radius: 8px;
+}
+.login-cred-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted, #5a6a62);
+  margin-bottom: 0.45rem;
+}
+.login-cred-grid {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+}
+.login-cred-grid dt {
+  font-size: 0.72rem;
+  color: var(--muted, #5a6a62);
+  margin: 0;
+}
+.login-cred-grid dd {
+  margin: 0.15rem 0 0;
+}
+.login-cred-grid code {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--line, #c5d0c8) 80%, transparent);
+  word-break: break-all;
+}
+.login-cred-note {
+  margin: 0.55rem 0 0.35rem;
+  font-size: 0.78rem;
+  color: var(--muted, #5a6a62);
+  line-height: 1.35;
+}
 .login-card .notice {
   margin: 0;
 }

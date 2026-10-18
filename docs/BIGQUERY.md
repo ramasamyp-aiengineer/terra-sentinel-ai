@@ -2,7 +2,7 @@
 
 TerraSentinel runs on local files by default. BigQuery is an opt-in backend: same API, same detection maths, different storage. The maths (detection, early-warning bands) never runs inside Gemini.
 
-> **Verification status (18 Oct 2026).** Live against project `project-3c4cd22c-ff1e-405d-803` / dataset `terrasentinel`: doctor all OK, demo loaded (1,355 points / 6,775 epochs), pipeline returns 87 sites. Offline suite still covers SQL + fake runner. **Cloud Run / DML MERGE path still needs an open billing account** (sandbox allows DDL + load jobs; MERGE/TRUNCATE DML does not). Replace-mode loads use WRITE_TRUNCATE load jobs so `--load-demo` works without billing.
+> **Verification status (18 Oct 2026).** Live against project `project-3c4cd22c-ff1e-405d-803` / dataset `terrasentinel` (Cloud Run + BigQuery). Demo: 1,355 points / **46 epochs** / 62,330 timeseries rows; pipeline matches local (3 CRITICAL, 4 ELEVATED). **Important:** BigQuery sandbox default **60-day partition expiration** deletes older InSAR epochs and forces every site to WEAK — clear with `ALTER TABLE … SET OPTIONS (partition_expiration_days = NULL)` (see `scripts/bq_clear_partition_expiry.sql`) before `--load-demo`.
 
 ## 1. Prerequisites
 

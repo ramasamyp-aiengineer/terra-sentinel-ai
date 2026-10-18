@@ -56,8 +56,18 @@ function HowTo() {
 export default function CommandCenter() {
   const regionId = useUi((s) => s.regionId)
   const select = useUi((s) => s.selectSite)
-  const { data, isLoading, error, refetch } = useQuery({ queryKey: ['summary', regionId], queryFn: () => api.regionSummary(regionId) })
-  const { data: alerts } = useQuery({ queryKey: ['alerts', regionId, '', ''], queryFn: () => api.alerts(regionId) })
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['summary', regionId],
+    queryFn: () => api.regionSummary(regionId),
+    staleTime: 60_000,
+  })
+  // Alerts can wait a beat — summary + map are what make Command Center feel ready.
+  const { data: alerts } = useQuery({
+    queryKey: ['alerts', regionId, '', ''],
+    queryFn: () => api.alerts(regionId),
+    staleTime: 60_000,
+    enabled: !!data,
+  })
   const fresh = alerts?.alerts.filter((a) => a.pass_index === 0 && a.severity !== 'info' && a.status === 'open').slice(0, 3) ?? []
 
   return (

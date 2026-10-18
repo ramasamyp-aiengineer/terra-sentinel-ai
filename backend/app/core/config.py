@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     # Hard cost guard: any query that would scan more than this many GB fails instead of billing.
     bq_max_gb_billed: float = 10.0
     # How long BigQuery reads are reused in memory before re-querying.
-    bq_cache_ttl_s: int = 300
+    bq_cache_ttl_s: int = 900
     # Local CSV storage is for demos and small pilots; refuse to silently crawl on big files.
     max_local_timeseries_rows: int = 3_000_000
     max_upload_mb: int = 50
@@ -47,9 +47,9 @@ class Settings(BaseSettings):
     gemini_model: str = "gemini-flash-latest"
     # Tried in order when the primary model returns 429/5xx (overloaded or quota).
     gemini_fallback_models: str = "gemini-flash-lite-latest,gemini-3.7-flash,gemini-3.5-flash"
-    gemini_timeout_s: float = 20.0
+    gemini_timeout_s: float = 12.0
     # Total time spent trying models for one work order before using the template.
-    gemini_budget_s: float = 30.0
+    gemini_budget_s: float = 18.0
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     # --- access control -------------------------------------------------------------------------
     # Sign-in is on by default. Set TS_AUTH_ENABLED=false only for local development.
@@ -62,6 +62,9 @@ class Settings(BaseSettings):
     # First-run administrator. Empty password = generate one, log it once and save it under state_dir.
     admin_user: str = "admin"
     admin_password: str = ""
+    # When true, GET /api/auth/login-hint exposes the admin username/password on the sign-in page.
+    # Intended for competition judging only — keep false for any long-lived public deployment.
+    show_login_hint: bool = False
     # Lock a username (per client address) after this many wrong passwords, for this many seconds.
     login_max_failures: int = 5
     login_lockout_s: int = 300

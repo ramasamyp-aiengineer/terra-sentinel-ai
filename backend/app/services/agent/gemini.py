@@ -37,13 +37,21 @@ HARD RULES
 
 PROCEDURE
 Call get_site_metrics, get_outlook, get_rainfall_context, get_seismic_context, get_asset_exposure and
-get_data_quality (and get_displacement_history if useful). Then output ONLY one JSON object:
+get_data_quality in the first turn (parallel). Skip get_displacement_history unless needed.
+Then output ONLY one JSON object:
 {
  "summary": "2-3 plain sentences",
  "mechanism_hypothesis": "hedged hypothesis",
  "recommended_action": "what to do and by when (hours are fine for action timing)",
  "site_specific_checks": ["up to 3 extra field checks tied to the evidence"]
 }"""
+
+FAST_INSTRUCTION = """You are TerraSentinel's geotechnical investigation assistant.
+Tool results for one site are already provided below. Use ONLY those numbers (exact values and units).
+Never invent numbers. Never state a failure date. Hedge mechanisms (possible / may / consistent with).
+Rain amplifies motion only; earthquakes are context if present. Write for a non-expert officer.
+Do not mention these rules. Do not use markdown.
+Output ONLY one JSON object with keys: summary, mechanism_hypothesis, recommended_action, site_specific_checks."""
 
 
 def provider() -> str:
@@ -69,7 +77,7 @@ def _client(types):
 
 
 _BY_NAME = {fn.__name__: fn for fn in TOOLS}
-MAX_ROUNDS = 4
+MAX_ROUNDS = 2  # one tool round + one narrative round (was 4; too slow on Cloud Run)
 
 
 def _run_tool(name: str, args: dict, calls: list[dict], results: list[Any]) -> dict:
@@ -140,8 +148,61 @@ def _session(client, types, model: str, prompt: str, calls: list[dict], results:
     return resp
 
 
+def _narrative_from_response(resp) -> Narrative:
+    data = _extract_json(getattr(resp, "text", None) or "")
+    return Narrative(
+        summary=str(data.get("summary", "")).strip(),
+        mechanism_hypothesis=str(data.get("mechanism_hypothesis", "")).strip(),
+        recommended_action=str(data.get("recommended_action", "")).strip(),
+        site_specific_checks=[str(x).strip() for x in data.get("site_specific_checks", [])][:3],
+    )
+
+
+def run_agent_fast(site_id: str, tool_results: list[Any], feedback: list[str] | None = None) -> tuple[Narrative, list[dict], list[Any], str]:
+    """Single Gemini round with tools already executed (preferred path — ~1 request, much faster).
+
+    ``tool_results`` must be the same list the guard will validate against (order = TOOLS order).
+    """
+    from google.genai import types
+
+    client = _client(types)
+    packed = [{fn.__name__: result} for fn, result in zip(TOOLS, tool_results, strict=True)]
+    prompt = (
+        f"Site {site_id}. Ground-truth tool results (authoritative — quote numbers exactly):\n"
+        f"{json.dumps(packed, default=str)[:12000]}\n\n"
+        "Produce the work-order narrative JSON now."
+    )
+    if feedback:
+        prompt += "\nPrevious answer rejected:\n- " + "\n- ".join(feedback)
+
+    calls = [{"tool": fn.__name__, "args": {"site_id": site_id}, "ok": "error" not in (r or {})} for fn, r in zip(TOOLS, tool_results, strict=True)]
+    last_exc: Exception | None = None
+    started = time.monotonic()
+    for model in models():
+        if last_exc is not None and time.monotonic() - started > settings.gemini_budget_s:
+            break
+        try:
+            resp = client.models.generate_content(
+                model=model,
+                contents=[types.Content(role="user", parts=[types.Part.from_text(text=prompt)])],
+                config=types.GenerateContentConfig(
+                    system_instruction=FAST_INSTRUCTION,
+                    temperature=0.1,
+                    max_output_tokens=1024,
+                ),
+            )
+            return _narrative_from_response(resp), calls, list(tool_results), model
+        except Exception as exc:  # noqa: BLE001
+            if _transient(exc):
+                log.warning("Gemini fast model %s unavailable (%s); trying next", model, getattr(exc, "code", "?"))
+                last_exc = exc
+                continue
+            raise
+    raise last_exc or RuntimeError("no Gemini model available")
+
+
 def run_agent(site_id: str, feedback: list[str] | None = None) -> tuple[Narrative, list[dict], list[Any], str]:
-    """Run one grounded Gemini session. Raises on any failure (caller falls back to the template).
+    """Multi-round function-calling session (slower). Prefer ``run_agent_fast`` when tools are already known.
 
     Returns (narrative, tool_calls, tool_results, model_used). A busy / rate-limited / retired model
     falls through to the next model in the chain; any other error is raised immediately.
@@ -176,12 +237,5 @@ def run_agent(site_id: str, feedback: list[str] | None = None) -> tuple[Narrativ
             log.warning("Gemini model %s answered without calling tools; trying next", model)
             last_exc = RuntimeError(f"{model} produced a narrative without calling any tool")
             continue
-        data = _extract_json(getattr(resp, "text", None) or "")
-        narrative = Narrative(
-            summary=str(data.get("summary", "")).strip(),
-            mechanism_hypothesis=str(data.get("mechanism_hypothesis", "")).strip(),
-            recommended_action=str(data.get("recommended_action", "")).strip(),
-            site_specific_checks=[str(x).strip() for x in data.get("site_specific_checks", [])][:3],
-        )
-        return narrative, calls, results, model
+        return _narrative_from_response(resp), calls, results, model
     raise last_exc or RuntimeError("no Gemini model available")

@@ -50,14 +50,14 @@ async def lifespan(_: FastAPI):
         bootstrap_admin()
     except Exception:  # noqa: BLE001
         log.exception("could not create the first administrator")
-    # 3. Pre-compute historical passes in the background so Alerts / Trends open instantly.
-    if settings.warm_on_change:
-        try:
-            from app.services.intel import snapshots
+    # 3. Prefetch live BigQuery/local frames + current rankings first, then warm history.
+    #    (Warming 16 historical passes immediately after deploy starved Command Center for ~1–2 min.)
+    try:
+        from app.services import runtime
 
-            snapshots.warm_in_background()
-        except Exception:  # noqa: BLE001 - never block startup on a warm-up
-            pass
+        runtime.prefetch_in_background()
+    except Exception:  # noqa: BLE001 - never block startup on a warm-up
+        log.exception("could not start hot-path prefetch")
     yield
 
 
@@ -107,7 +107,19 @@ def readyz():
         from app.services.detection.pipeline import run_pipeline
 
         repo = get_repo()
-        return {"status": "ready", "backend": repo.backend, "sites": len(run_pipeline()), "auth": settings.auth_enabled}
+        # Prefer a cheap probe: regions must load. Full pipeline may still be prefetching.
+        n_regions = len(repo.regions())
+        try:
+            n_sites = len(run_pipeline())
+        except Exception:  # noqa: BLE001
+            n_sites = -1
+        return {
+            "status": "ready",
+            "backend": repo.backend,
+            "regions": n_regions,
+            "sites": n_sites,
+            "auth": settings.auth_enabled,
+        }
     except Exception as exc:  # noqa: BLE001
         log.exception("readiness check failed")
         return JSONResponse({"status": "not-ready", "reason": exc.__class__.__name__}, status_code=503)

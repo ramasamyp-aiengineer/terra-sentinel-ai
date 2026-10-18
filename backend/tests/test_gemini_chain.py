@@ -102,7 +102,8 @@ def test_happy_path_forces_tools_first_and_records_every_call(fake):
     assert [c["tool"] for c in calls] == ["get_site_metrics", "get_outlook"] and all(c["ok"] for c in calls)
     assert len(results) == 2 and "error" not in results[0]
     # one parallel tool round + one answer = exactly 2 requests; tool use forced on turn 1; SDK auto-calling off
-    assert [r["mode"] for r in models.requests] == ["ANY", "AUTO"]
+    # MAX_ROUNDS=2: force tools on turn 0 (ANY), forbid on turn 1 (NONE) so the narrative returns fast.
+    assert [r["mode"] for r in models.requests] == ["ANY", "NONE"]
     assert all(r["afc_off"] for r in models.requests)
     assert models.requests[1]["n_contents"] == 3  # prompt + model tool-call turn + tool results
 
@@ -143,11 +144,20 @@ def test_unknown_tool_and_tool_errors_become_data_not_crashes(fake):
 
 
 def test_tool_loop_is_bounded_and_last_round_forbids_tools(fake):
-    keep_asking = [_resp(calls=[("get_site_metrics", {"site_id": SITE})])] * 3 + [_resp(text=GOOD)]
-    models = fake({"m1": keep_asking, "m2": "ok", "m3": "ok"})
+    # Round 0 forces tools (ANY); round 1 is the last and forbids tools (NONE).
+    models = fake(
+        {
+            "m1": [
+                _resp(calls=[("get_site_metrics", {"site_id": SITE})]),
+                _resp(text=GOOD),
+            ],
+            "m2": "ok",
+            "m3": "ok",
+        }
+    )
     _, calls, _, used = gemini.run_agent(SITE)
-    assert used == "m1" and len(calls) == 3
-    assert [r["mode"] for r in models.requests] == ["ANY", "AUTO", "AUTO", "NONE"]
+    assert used == "m1" and len(calls) == 1
+    assert [r["mode"] for r in models.requests] == ["ANY", "NONE"]
     assert len(models.requests) == gemini.MAX_ROUNDS
 
 

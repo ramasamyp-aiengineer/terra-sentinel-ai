@@ -113,8 +113,8 @@ export const api = {
   siteHistory: (id: string) => req<{ site_id: string; history: SiteHistoryPoint[] }>(`/api/sites/${id}/history`),
   points: (bbox: [number, number, number, number], limit = 4000) =>
     req<{ count: number; truncated: boolean; points: MapPoint[] }>(`/api/points?bbox=${bbox.join(',')}&limit=${limit}`),
-  workOrder: (id: string, refresh = false) =>
-    req<WorkOrder>(`/api/sites/${id}/workorder${refresh ? '?refresh=true' : ''}`, { method: 'POST' }),
+  workOrder: (id: string, refresh = false, mode: 'auto' | 'template' = 'auto') =>
+    req<WorkOrder>(`/api/sites/${id}/workorder${qs({ mode, refresh: refresh ? 'true' : undefined })}`, { method: 'POST' }),
   workOrderQueue: (region?: string) => req<WorkOrderQueue>(`/api/workorders${qs({ region })}`),
 
   alerts: (region: string, status?: string, severity?: string) => req<AlertsResponse>(`/api/alerts${qs({ region, status, severity })}`),
@@ -155,6 +155,8 @@ export const api = {
   bigQueryDoctor: () => req<DoctorResult>('/api/data/bigquery/doctor'),
 
   me: () => req<AuthMe>('/api/auth/me'),
+  loginHint: () =>
+    req<{ enabled: boolean; username?: string; password?: string | null; role?: string; note?: string }>('/api/auth/login-hint'),
   login: (username: string, password: string) => req<{ auth_enabled: boolean; user: SessionUser }>('/api/auth/login', json({ username, password })),
   logout: () => req<{ ok: boolean }>('/api/auth/logout', { method: 'POST' }),
   changePassword: (current_password: string, new_password: string) => req<{ ok: boolean }>('/api/auth/password', json({ current_password, new_password })),

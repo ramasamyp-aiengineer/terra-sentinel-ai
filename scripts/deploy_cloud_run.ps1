@@ -121,11 +121,12 @@ try {
 }
 
 function Test-GCloudExists {
-  param([string[]]$GcloudArgs)
+  param([Parameter(ValueFromRemainingArguments = $true)][string[]]$GcloudArgs)
   $prev = $ErrorActionPreference
   $ErrorActionPreference = "Continue"
-  $out = & $GcloudCmd @GcloudArgs 2>$null
-  $ok = ($LASTEXITCODE -eq 0) -and (-not [string]::IsNullOrWhiteSpace(($out | Out-String)))
+  # Discard output; existence is decided only by exit code.
+  [void](& $GcloudCmd @GcloudArgs 1>$null 2>$null)
+  $ok = ($LASTEXITCODE -eq 0)
   $ErrorActionPreference = $prev
   return $ok
 }
@@ -133,7 +134,10 @@ function Test-GCloudExists {
 Write-Host "==> Artifact Registry"
 if (-not (Test-GCloudExists artifacts repositories describe $Repo --location=$Region --format='value(name)')) {
   $code = Invoke-GCloud artifacts repositories create $Repo --repository-format=docker --location=$Region --description="TerraSentinel images"
-  if ($code -ne 0) { throw "Failed to create Artifact Registry repo" }
+  # 0 = created; non-zero is OK if the repo already exists (race / flaky describe).
+  if ($code -ne 0 -and -not (Test-GCloudExists artifacts repositories describe $Repo --location=$Region --format='value(name)')) {
+    throw "Failed to create Artifact Registry repo"
+  }
 }
 
 $Sa = "terrasentinel-run@$ProjectId.iam.gserviceaccount.com"
@@ -182,7 +186,8 @@ if (-not $SkipBuild) {
 }
 
 $min = if ($KeepWarm) { 1 } else { 0 }
-$envVars = "TS_TRUST_PROXY=true,TS_PROXY_HOPS=1,TS_AUTH_ENABLED=true,TS_ADMIN_USER=$adminUser,TS_GCP_PROJECT=$ProjectId,TS_GCP_REGION=$Region"
+# TS_SHOW_LOGIN_HINT=true so Cup judges see username + password on the sign-in page.
+$envVars = "TS_TRUST_PROXY=true,TS_PROXY_HOPS=1,TS_AUTH_ENABLED=true,TS_SHOW_LOGIN_HINT=true,TS_ADMIN_USER=$adminUser,TS_GCP_PROJECT=$ProjectId,TS_GCP_REGION=$Region"
 if ($EnableBigQuery) {
   $envVars += ",TS_DATA_BACKEND=bigquery,TS_BQ_DATASET=terrasentinel,TS_BQ_LOCATION=US"
 }

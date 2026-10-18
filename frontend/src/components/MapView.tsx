@@ -90,9 +90,17 @@ export function MapView() {
   const showCorridors = useUi((s) => s.showCorridors)
   const toggle = useUi((s) => s.toggle)
 
-  const { data: regions } = useQuery({ queryKey: ['regions'], queryFn: api.regions })
-  const { data: corridors } = useQuery({ queryKey: ['corridors', regionId], queryFn: () => api.corridors(regionId) })
-  const { data: sitesData } = useQuery({ queryKey: ['sites', regionId], queryFn: () => api.sites(regionId) })
+  const { data: regions } = useQuery({ queryKey: ['regions'], queryFn: api.regions, staleTime: 60_000 })
+  const { data: corridors } = useQuery({
+    queryKey: ['corridors', regionId],
+    queryFn: () => api.corridors(regionId),
+    staleTime: 60_000,
+  })
+  const { data: sitesData } = useQuery({
+    queryKey: ['sites', regionId],
+    queryFn: () => api.sites(regionId),
+    staleTime: 60_000,
+  })
 
   // Raw scatterers: only in a site-level viewport, never the full dataset.
   const roundedBox = bbox?.map((v) => Math.round(v * 200) / 200) as typeof bbox

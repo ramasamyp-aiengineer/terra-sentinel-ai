@@ -54,14 +54,11 @@ def read_queries(project: str, dataset: str) -> dict[str, str]:
     return {
         "regions": f"SELECT region_id, parent_id, name, level, center_lon, center_lat, zoom FROM {f('regions')} ORDER BY region_id",
         "assets": f"SELECT asset_id, name, asset_type, region_id, criticality, consequence_note, buffer_m, geometry_json FROM {f('assets')} ORDER BY asset_id",
-        # Spatial pre-filter: only scatterers inside some asset corridor are pulled into the pipeline.
-        "points": f"""SELECT p.point_id, p.lat, p.lon, p.velocity_mm_yr, p.coherence, p.region_id, p.source
-FROM {f('points')} AS p
-WHERE p.point_id IN (SELECT point_id FROM {f('v_point_assignment')})""",
-        "timeseries": f"""SELECT ts.point_id, ts.date, ts.disp_mm
-FROM {f('timeseries')} AS ts
-WHERE ts.point_id IN (SELECT point_id FROM {f('v_point_assignment')})
-ORDER BY ts.point_id, ts.date""",
+        # Hot-path reads pull the corridor tables directly. The Python engine still assigns points to
+        # assets in memory. Avoid joining ``v_point_assignment`` (ST_DWITHIN) on every cold start —
+        # that view is fine for national-scale warehouses but made Command Center wait ~1–2 minutes.
+        "points": f"SELECT point_id, lat, lon, velocity_mm_yr, coherence, region_id, source FROM {f('points')}",
+        "timeseries": f"SELECT point_id, date, disp_mm FROM {f('timeseries')} ORDER BY point_id, date",
         "rain": f"SELECT region_id, date, precip_mm FROM {f('rain')} ORDER BY region_id, date",
         "counts": f"""SELECT
   (SELECT COUNT(*) FROM {f('regions')}) AS regions,

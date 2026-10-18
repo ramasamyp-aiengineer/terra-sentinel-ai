@@ -1,4 +1,5 @@
 import { Component, lazy, Suspense, useEffect, type ReactNode } from 'react'
+import { DataAck } from './components/DataAck'
 import { SiteDrawer } from './components/SiteDrawer'
 import { Sidebar } from './components/Sidebar'
 import { TopBar } from './components/TopBar'
@@ -94,6 +95,7 @@ function Workspace() {
         </main>
       </div>
       <SiteDrawer />
+      <DataAck />
     </div>
   )
 }

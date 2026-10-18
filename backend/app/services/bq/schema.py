@@ -193,8 +193,16 @@ def create_table_ddl(t: Table, project: str, dataset: str) -> str:
         parts.append(f"PARTITION BY {_ident(t.partition_by)}")
     if t.cluster_by:
         parts.append("CLUSTER BY " + ", ".join(_ident(c) for c in t.cluster_by))
+    # Never set partition expiration here. BigQuery sandbox defaults (60d) wipe demo InSAR
+    # history and force every site into WEAK/data_degraded. Clear with:
+    #   ALTER TABLE ... SET OPTIONS (partition_expiration_days = NULL)
+    opts: list[str] = []
+    if t.partition_by:
+        opts.append("partition_expiration_days = NULL")
     if t.description:
-        parts.append("OPTIONS (description = " + repr(t.description) + ")")
+        opts.append("description = " + repr(t.description))
+    if opts:
+        parts.append("OPTIONS (" + ", ".join(opts) + ")")
     return "\n".join(parts)
 
 

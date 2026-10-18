@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { AlertCircle, Eye, EyeOff, FileCheck2, Gauge, Lock, SatelliteDish } from 'lucide-react'
-import { ApiError } from '../api/client'
+import { api, ApiError } from '../api/client'
 import { BrandWordmark } from '../components/brand/BrandLogo'
 import { LoginCallout, LoginLegend } from '../components/LoginHud'
 import { Btn } from '../components/ui'
@@ -31,12 +32,27 @@ export function LoginPage({ expired, unreachable, onRetry }: { expired?: boolean
   const [show, setShow] = useState(false)
   const [caps, setCaps] = useState(false)
   const [missing, setMissing] = useState(false)
+  const [filledFromHint, setFilledFromHint] = useState(false)
   const userRef = useRef<HTMLInputElement>(null)
+
+  const { data: hint } = useQuery({
+    queryKey: ['login-hint'],
+    queryFn: api.loginHint,
+    staleTime: 60_000,
+    retry: 1,
+  })
 
   useEffect(() => {
     userRef.current?.focus()
     document.title = 'Sign in \u00B7 TerraSentinel'
   }, [])
+
+  useEffect(() => {
+    if (!hint?.enabled || !hint.username || !hint.password || filledFromHint) return
+    setUsername(hint.username)
+    setPassword(hint.password)
+    setFilledFromHint(true)
+  }, [hint, filledFromHint])
 
   const ready = username.trim().length > 0 && password.length > 0
   const submit = (e: React.FormEvent) => {
@@ -50,6 +66,7 @@ export function LoginPage({ expired, unreachable, onRetry }: { expired?: boolean
     login.mutate({ username: username.trim(), password })
   }
   const failed = missing && !ready ? 'Enter your username and password.' : login.isError ? explain(login.error) : null
+  const showHint = !!hint?.enabled && !!hint.username && !!hint.password
 
   return (
     <div className="login">
@@ -77,7 +94,43 @@ export function LoginPage({ expired, unreachable, onRetry }: { expired?: boolean
       <main className="login-main">
         <form className="login-card" onSubmit={submit} noValidate aria-labelledby="login-title">
           <h2 id="login-title">Sign in</h2>
-          <p className="muted">Use the account your administrator created for you.</p>
+          <p className="muted">
+            {showHint
+              ? 'Judge demo — credentials are filled in below. Press Sign in to open Command Center.'
+              : 'Use the account your administrator created for you.'}
+          </p>
+
+          {showHint && (
+            <div className="login-cred" role="region" aria-label="Demo sign-in credentials">
+              <div className="login-cred-title">Demo access</div>
+              <dl className="login-cred-grid">
+                <div>
+                  <dt>Username</dt>
+                  <dd>
+                    <code>{hint.username}</code>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Password</dt>
+                  <dd>
+                    <code>{hint.password}</code>
+                  </dd>
+                </div>
+              </dl>
+              {hint.note && <p className="login-cred-note">{hint.note}</p>}
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => {
+                  setUsername(hint.username!)
+                  setPassword(hint.password!)
+                  setShow(true)
+                }}
+              >
+                Fill form again
+              </button>
+            </div>
+          )}
 
           {expired && !failed && (
             <div className="notice notice-info" role="status">
@@ -147,7 +200,9 @@ export function LoginPage({ expired, unreachable, onRetry }: { expired?: boolean
             Sign in
           </Btn>
 
-          <p className="muted login-help">Forgot your password? Ask an administrator to reset it.</p>
+          <p className="muted login-help">
+            {showHint ? 'After the Cup, turn off TS_SHOW_LOGIN_HINT so credentials are not public.' : 'Forgot your password? Ask an administrator to reset it.'}
+          </p>
         </form>
         <p className="login-legal muted">Signing in is recorded for security. Sessions end automatically after a while, or when you sign out.</p>
       </main>

@@ -11,7 +11,11 @@ export function Sidebar() {
   const regionId = useUi((s) => s.regionId)
   const navOpen = useUi((s) => s.navOpen)
   const setNavOpen = useUi((s) => s.setNavOpen)
-  const { data: alerts } = useQuery({ queryKey: ['alerts', regionId, '', ''], queryFn: () => api.alerts(regionId), staleTime: 30_000 })
+  const { data: alerts } = useQuery({
+    queryKey: ['alerts', regionId, '', ''],
+    queryFn: () => api.alerts(regionId),
+    staleTime: 60_000,
+  })
   const { can } = useAuth()
   const visible = NAV.filter((n) => !n.role || can(n.role))
 

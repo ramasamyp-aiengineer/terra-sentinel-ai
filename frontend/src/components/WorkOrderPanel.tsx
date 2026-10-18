@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Check, FileText, Printer, ShieldCheck, Sparkles } from 'lucide-react'
 import { api } from '../api/client'
+import type { WorkOrder } from '../api/types'
 import { useCan } from '../lib/auth'
 import { TIER_UI } from '../lib/tier'
 import { TierBadge } from './ui'
@@ -8,16 +10,39 @@ import { TierBadge } from './ui'
 export function WorkOrderPanel({ siteId }: { siteId: string }) {
   const qc = useQueryClient()
   const canDraft = useCan('analyst')
+  const [geminiUpgrade, setGeminiUpgrade] = useState<'idle' | 'running' | 'done' | 'skip'>('idle')
+
+  // Instant: deterministic template (same tools / numbers). Then upgrade with Gemini in the background.
   const { data: wo, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['workorder', siteId],
     queryFn: async () => {
-      const wo = await api.workOrder(siteId)
+      const draft = await api.workOrder(siteId, false, 'template')
       qc.invalidateQueries({ queryKey: ['workorders'] })
-      return wo
+      return draft
     },
     staleTime: Infinity,
     enabled: canDraft,
   })
+
+  useEffect(() => {
+    if (!canDraft || !wo || geminiUpgrade !== 'idle') return
+    let cancelled = false
+    setGeminiUpgrade('running')
+    api
+      .workOrder(siteId, false, 'auto')
+      .then((upgraded) => {
+        if (cancelled) return
+        qc.setQueryData(['workorder', siteId], upgraded)
+        qc.invalidateQueries({ queryKey: ['workorders'] })
+        setGeminiUpgrade(upgraded.generated_by === 'gemini' ? 'done' : 'skip')
+      })
+      .catch(() => {
+        if (!cancelled) setGeminiUpgrade('skip')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [canDraft, wo, siteId, geminiUpgrade, qc])
 
   if (!canDraft) {
     return (
@@ -29,7 +54,7 @@ export function WorkOrderPanel({ siteId }: { siteId: string }) {
   if (isLoading) {
     return (
       <div className="wo-loading">
-        <Sparkles size={16} className="spin" /> Investigating site: calling tools, checking evidence, drafting work order...
+        <Sparkles size={16} className="spin" /> Assembling evidence from site metrics…
       </div>
     )
   }
@@ -44,6 +69,34 @@ export function WorkOrderPanel({ siteId }: { siteId: string }) {
     )
   }
 
+  return (
+    <WorkOrderBody
+      wo={wo}
+      enhancing={geminiUpgrade === 'running'}
+      busy={isFetching}
+      onRegenerate={() => {
+        setGeminiUpgrade('idle')
+        api.workOrder(siteId, true, 'auto').then((next) => {
+          qc.setQueryData(['workorder', siteId], next)
+          qc.invalidateQueries({ queryKey: ['workorders'] })
+          setGeminiUpgrade(next.generated_by === 'gemini' ? 'done' : 'skip')
+        })
+      }}
+    />
+  )
+}
+
+function WorkOrderBody({
+  wo,
+  enhancing,
+  busy,
+  onRegenerate,
+}: {
+  wo: WorkOrder
+  enhancing: boolean
+  busy: boolean
+  onRegenerate: () => void
+}) {
   return (
     <article className="workorder" style={{ borderTopColor: TIER_UI[wo.tier].fill }}>
       <header className="wo-head">
@@ -63,12 +116,17 @@ export function WorkOrderPanel({ siteId }: { siteId: string }) {
 
       <div className="wo-provenance">
         <span className="chip" title={wo.model ?? 'Deterministic template'}>
-          <Sparkles size={12} /> {wo.generated_by === 'gemini' ? `Gemini (${wo.model})` : 'Deterministic template'}
+          <Sparkles size={12} /> {wo.generated_by === 'gemini' ? `Gemini (${wo.model})` : 'Grounded template'}
         </span>
         <span className={`chip ${wo.validation.passed ? 'chip-ok' : 'chip-bad'}`} title={wo.validation.issues.join('\n')}>
           <ShieldCheck size={12} /> Numbers verified against tools ({wo.validation.numbers_checked})
         </span>
         {wo.tool_calls.length > 0 && <span className="chip">{wo.tool_calls.length} tool calls</span>}
+        {enhancing && (
+          <span className="chip chip-brand">
+            <Sparkles size={12} className="spin" /> Gemini refining…
+          </span>
+        )}
       </div>
 
       <section>
@@ -139,7 +197,7 @@ export function WorkOrderPanel({ siteId }: { siteId: string }) {
         <button className="btn-secondary" onClick={() => navigator.clipboard?.writeText(wo.ticket_id)}>
           <FileText size={14} /> Copy ticket ID
         </button>
-        <button className="btn-secondary" disabled={isFetching} onClick={() => api.workOrder(siteId, true).then(() => { qc.invalidateQueries({ queryKey: ['workorders'] }); return refetch() })}>
+        <button className="btn-secondary" disabled={busy || enhancing} onClick={onRegenerate}>
           <Check size={14} /> Regenerate
         </button>
       </div>

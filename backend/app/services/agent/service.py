@@ -51,18 +51,25 @@ def generate_work_order(site_id: str, mode: Literal["auto", "template"] = "auto"
 
     if mode == "auto" and gemini.is_configured():
         feedback: list[str] | None = None
+        # Fast path: one Gemini call with tools already run (avoids multi-round function calling).
         for attempt in range(2):
             try:
-                narrative, calls, _, used_model = gemini.run_agent(site_id, feedback)
+                narrative, calls, _, used_model = gemini.run_agent_fast(site_id, truth, feedback)
                 v = validate_narrative(narrative, truth, d["tier"], site_id)
                 if v.passed:
                     wo = build_work_order(d, narrative, "gemini", v, used_model, calls)
                     break
                 feedback = v.issues
-                log.warning("Gemini narrative rejected (attempt %d): %s", attempt + 1, v.issues)
-            except Exception as exc:  # noqa: BLE001 - any failure must fall back, never surface a blank
-                log.exception("Gemini agent failed: %s", exc)
-                feedback = None
+                log.warning("Gemini fast narrative rejected (attempt %d): %s", attempt + 1, v.issues)
+            except Exception as exc:  # noqa: BLE001
+                log.warning("Gemini fast path failed (%s); trying function-calling once", exc)
+                try:
+                    narrative, calls, _, used_model = gemini.run_agent(site_id, feedback)
+                    v = validate_narrative(narrative, truth, d["tier"], site_id)
+                    if v.passed:
+                        wo = build_work_order(d, narrative, "gemini", v, used_model, calls)
+                except Exception as exc2:  # noqa: BLE001
+                    log.exception("Gemini agent failed: %s", exc2)
                 break
 
     if wo is None:

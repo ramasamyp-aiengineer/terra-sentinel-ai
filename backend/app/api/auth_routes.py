@@ -61,6 +61,32 @@ def me(request: Request):
     }
 
 
+@router.get("/login-hint")
+def login_hint():
+    """Optional judge/demo credentials for the sign-in page. Off unless TS_SHOW_LOGIN_HINT=true."""
+    if not settings.show_login_hint or not settings.auth_enabled:
+        return {"enabled": False}
+    password = (settings.admin_password or "").strip()
+    if not password:
+        note = settings.state_dir / "initial_admin_password.txt"
+        if note.is_file():
+            password = next((ln.strip() for ln in note.read_text(encoding="utf-8").splitlines() if ln.strip()), "")
+    if not password:
+        return {
+            "enabled": True,
+            "username": settings.admin_user,
+            "password": None,
+            "note": "Demo hint is on, but no password is configured. Set TS_ADMIN_PASSWORD.",
+        }
+    return {
+        "enabled": True,
+        "username": settings.admin_user,
+        "password": password,
+        "role": "admin",
+        "note": "Judge demo account for the AI Builder Cup. Turn off TS_SHOW_LOGIN_HINT after judging.",
+    }
+
+
 class PasswordBody(BaseModel):
     current_password: str = Field(max_length=256)
     new_password: str = Field(max_length=256)

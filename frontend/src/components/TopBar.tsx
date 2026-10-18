@@ -12,9 +12,15 @@ export function TopBar() {
   const regionId = useUi((s) => s.regionId)
   const setRegion = useUi((s) => s.setRegion)
   const setNavOpen = useUi((s) => s.setNavOpen)
-  const { data: regions } = useQuery({ queryKey: ['regions'], queryFn: api.regions })
-  const { data: meta } = useQuery({ queryKey: ['meta'], queryFn: api.meta })
-  const { data: alerts } = useQuery({ queryKey: ['alerts', regionId, '', ''], queryFn: () => api.alerts(regionId), staleTime: 30_000 })
+  const { data: regions } = useQuery({ queryKey: ['regions'], queryFn: api.regions, staleTime: 60_000 })
+  const { data: meta } = useQuery({ queryKey: ['meta'], queryFn: api.meta, staleTime: 60_000 })
+  // After region chrome is up — never race the first summary/map paint.
+  const { data: alerts } = useQuery({
+    queryKey: ['alerts', regionId, '', ''],
+    queryFn: () => api.alerts(regionId),
+    staleTime: 60_000,
+    enabled: !!regions,
+  })
 
   // depth-first so the hierarchy reads naturally
   const ordered: { region_id: string; name: string; depth: number }[] = []

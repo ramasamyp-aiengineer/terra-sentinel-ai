@@ -18,6 +18,18 @@ from app.services.detection.tiering import TIER_RANK
 from app.services.intel import snapshots
 
 LOOKBACK_PASSES = 6  # how many past pass-to-pass diffs to turn into alerts
+
+
+def _lookback() -> int:
+    try:
+        from app.core.config import settings
+
+        # BigQuery historical passes are expensive; Command Center only needs the latest diffs.
+        if settings.data_backend.lower() == "bigquery":
+            return 2
+    except Exception:  # noqa: BLE001
+        pass
+    return LOOKBACK_PASSES
 SEVERITY_RANK = {"critical": 3, "high": 2, "medium": 1, "info": 0}
 ACTIONS = {"acknowledge": "acknowledged", "assign": "assigned", "escalate": "escalated", "resolve": "resolved", "reopen": "open"}
 STATUSES = {"open", "acknowledged", "assigned", "escalated", "resolved"}
@@ -152,14 +164,15 @@ def _rain_alerts(p_new: snapshots.Pass, p_old: snapshots.Pass, tbl: dict[str, di
 
 @lru_cache(maxsize=1)
 def _events() -> tuple[dict, ...]:
-    with snapshots._LOCK:  # clear() waits for an in-flight build
-        return _build_events()
+    # Do not hold snapshots._LOCK for the whole build — each table_for() locks per pass.
+    # Holding the lock across all lookback passes starved Command Center for ~1 minute.
+    return _build_events()
 
 
 def _build_events() -> tuple[dict, ...]:
-    ps = snapshots.passes()
+    ps = snapshots.passes(_lookback() + 1)
     events: list[dict] = []
-    for i in range(min(LOOKBACK_PASSES, max(len(ps) - 1, 0))):
+    for i in range(min(_lookback(), max(len(ps) - 1, 0))):
         new_t, old_t = snapshots.table_for(ps[i]), snapshots.table_for(ps[i + 1])
         for sid, new in new_t.items():
             old = old_t.get(sid)
