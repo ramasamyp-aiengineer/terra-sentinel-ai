@@ -11,6 +11,7 @@ Built for the **Google Cloud AI Builder Cup 2026 (JAPAC · Sustainability)**.
 | **Live demo** | https://terrasentinel-598899050820.asia-southeast1.run.app |
 | **Sign-in** | Username and password are **shown on the login page** (judge demo hint) |
 | **Judge guide** | [`docs/JUDGE.md`](docs/JUDGE.md) — five-minute walk + production story |
+| **Cup submission deck** | [`docs/pitch/TerraSentinel-AI-Builder-Cup-Submission.pdf`](docs/pitch/TerraSentinel-AI-Builder-Cup-Submission.pdf) · [`.pptx`](docs/pitch/TerraSentinel-AI-Builder-Cup-Submission.pptx) (official template filled) |
 | **Source** | https://github.com/ramasamyp-aiengineer/terra-sentinel-ai |
 
 ---

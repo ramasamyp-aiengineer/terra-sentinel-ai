@@ -3,7 +3,9 @@
 How to evaluate TerraSentinel as a **production-shaped** sustainability product, not a slide deck.
 
 **Live:** https://terrasentinel-598899050820.asia-southeast1.run.app  
-**Credentials:** shown on the sign-in page (username + password). Sign in as admin for the full tour.
+**Credentials:** shown on the sign-in page (username + password). Sign in as admin for the full tour.  
+**Cup submission deck (official template):** [`TerraSentinel-AI-Builder-Cup-Submission.pdf`](pitch/TerraSentinel-AI-Builder-Cup-Submission.pdf) · [`.pptx`](pitch/TerraSentinel-AI-Builder-Cup-Submission.pptx)  
+Rebuild: `python docs/pitch/build_submission_deck.py`
 
 ---
 
