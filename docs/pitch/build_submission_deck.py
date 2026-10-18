@@ -241,45 +241,38 @@ def grid(cols: int, rows: int, gap: int = GAP):
 
 
 def s01_team(slide):
-    """Keep copy short — template text box clips long paragraphs."""
-    for sh in slide.shapes:
+    """Short copy in a box we control — never under the Cup footer."""
+    for sh in list(slide.shapes):
         if sh.has_text_frame and ("Team" in sh.text_frame.text or "Problem" in sh.text_frame.text or "TEAM" in sh.text_frame.text):
-            # Stretch the box slightly taller so nothing sits under the footer
             try:
-                if sh.top and sh.height:
-                    max_bottom = FOOTER_TOP - 40_000
-                    if sh.top + sh.height > max_bottom:
-                        sh.height = max_bottom - sh.top
+                sh.text_frame.clear()
             except Exception:
                 pass
-            tf = sh.text_frame
-            tf.clear()
-            tf.word_wrap = True
-            rows = [
-                ("TEAM DETAILS  ·  AI BUILDER CUP 2026  ·  JAPAC  ·  SUSTAINABILITY", 10, True, BRAND),
-                ("", 6, False, MUTED),
-                ("Team: Agent Ram   ·   Leader: Ramasamy P   ·   Product: TerraSentinel AI", 13, True, INK),
-                ("", 8, False, MUTED),
-                ("Satellites leave 1,355 moving points. The engine ranks the few that matter.", 12, True, BRAND),
-                ("Gemini writes the ticket — every number checked. Live on Cloud Run + BigQuery.", 12, True, BRAND),
-                ("", 8, False, MUTED),
-                ("Problem: InSAR portals give points, not who goes today. Chatbots invent mm.", 11, False, INK),
-                ("Solution: 250 m sites · RPI · honest ETA bands · Gemini number guard.", 11, False, INK),
-            ]
-            for i, (t, size, bold, color) in enumerate(rows):
-                p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-                p.space_after = Pt(3)
-                run = p.add_run()
-                run.text = t
-                run.font.size = Pt(size)
-                run.font.bold = bold
-                run.font.color.rgb = color
-                run.font.name = "Calibri"
-            return
+            # Hide template box so our positioned box is the only content
+            try:
+                sh.width = 1
+                sh.height = 1
+            except Exception:
+                pass
+
+    # Safe white band under the Cup hero art (~3.05M–4.85M)
+    box_top = 3_120_000
+    box_h = FOOTER_TOP - box_top - 80_000
+    text(slide, MARGIN_X + 80_000, box_top, CONTENT_W - 160_000, box_h, [
+        ("TEAM DETAILS  ·  AI BUILDER CUP 2026  ·  JAPAC  ·  SUSTAINABILITY", 11, True, BRAND),
+        ("", 8, False, MUTED),
+        ("Team: Agent Ram   ·   Leader: Ramasamy P   ·   Product: TerraSentinel AI", 14, True, INK),
+        ("", 10, False, MUTED),
+        ("Satellites leave 1,355 moving points. The engine ranks the few that matter.", 13, True, BRAND),
+        ("Gemini writes the ticket — every number checked. Live on Cloud Run + BigQuery.", 13, True, BRAND),
+        ("", 10, False, MUTED),
+        ("Problem: InSAR portals give points, not who goes today. Chatbots invent mm.", 12, False, INK),
+        ("Solution: 250 m sites · RPI · honest ETA bands · Gemini number guard.", 12, False, INK),
+    ])
 
 
 def s02_cover(slide):
-    """Strong left story + hero map. No 5-step row."""
+    """Strong left column (big proofs) + hero map. No 5-step row."""
     for sh in slide.shapes:
         if sh.has_text_frame and sh.top and 800_000 < sh.top < 4_000_000:
             try:
@@ -294,34 +287,32 @@ def s02_cover(slide):
     left_w = int(CONTENT_W * 0.46)
     right_x = MARGIN_X + left_w + 80_000
     right_w = CONTENT_W - left_w - 80_000 - 40_000
-    pad = 90_000
+    pad = 70_000
 
-    # Headline only — no overlapping body line
-    text(slide, MARGIN_X + pad, panel_y + 80_000, left_w - 2 * pad, 700_000, [
-        ("TERRASENTINEL AI", 10, True, BRAND),
-        ("Satellites see the ground move.", 17, True, INK),
-        ("Gemini tells engineers where to go first.", 14, True, BRAND),
+    text(slide, MARGIN_X + pad, panel_y + 70_000, left_w - 2 * pad, 620_000, [
+        ("TERRASENTINEL AI", 11, True, BRAND),
+        ("Satellites see the ground move.", 18, True, INK),
+        ("Gemini tells engineers where to go first.", 13, True, BRAND),
     ])
 
-    # Three stacked proof cards — clear gap under headline
+    # Three tall proof blocks — fill the left column, no empty strip
     proofs = [
-        ("62,330 → 4", "Observations → Act-today sites", BRAND),
-        ("RPI 86 · CRITICAL", "NH-58 · outlook 35–64 days if trend continues", BAD),
-        ("Gemini · verified", "6 tool calls · 7 numbers checked · 24h dispatch", BRAND),
+        ("62,330 → 4", "Observations become act-today sites", BRAND, SOFT),
+        ("RPI 86 · CRITICAL", "NH-58 · 35–64 day outlook if trend continues", BAD, BAD_BG),
+        ("Gemini · verified", "6 tools · 7 numbers checked · 24h dispatch", BRAND, SOFT),
     ]
-    stack_top = panel_y + 1_050_000
-    stack_h = panel_y + panel_h - stack_top - 100_000
-    gap_s = 60_000
-    ph = (stack_h - 2 * gap_s) // 3
-    for i, (big, small, accent) in enumerate(proofs):
+    stack_top = panel_y + 780_000
+    stack_bot = panel_y + panel_h - 80_000
+    gap_s = 50_000
+    ph = (stack_bot - stack_top - 2 * gap_s) // 3
+    for i, (big, small, accent, fill) in enumerate(proofs):
         y = stack_top + i * (ph + gap_s)
-        card(slide, MARGIN_X + pad, y, left_w - 2 * pad, ph, SOFT if i != 1 else BAD_BG, LINE, accent)
-        text(slide, MARGIN_X + pad + 70_000, y + 55_000, left_w - 2 * pad - 120_000, ph - 90_000, [
-            (big, 15, True, accent),
-            (small, 10, False, INK),
+        card(slide, MARGIN_X + pad, y, left_w - 2 * pad, ph, fill, LINE, accent)
+        text(slide, MARGIN_X + pad + 60_000, y + int(ph * 0.22), left_w - 2 * pad - 100_000, int(ph * 0.56), [
+            (big, 20, True, accent),
+            (small, 12, False, INK),
         ])
 
-    # Right: full-height hero map
     hero = SHOTS / "c-hero-map.png"
     if hero.exists():
         pic(slide, hero, right_x, panel_y + 80_000, right_w, panel_h - 160_000)
