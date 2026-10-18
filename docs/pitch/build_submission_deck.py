@@ -241,48 +241,34 @@ def grid(cols: int, rows: int, gap: int = GAP):
 
 
 def s01_team(slide):
+    """Keep copy short — template text box clips long paragraphs."""
     for sh in slide.shapes:
         if sh.has_text_frame and ("Team" in sh.text_frame.text or "Problem" in sh.text_frame.text or "TEAM" in sh.text_frame.text):
+            # Stretch the box slightly taller so nothing sits under the footer
+            try:
+                if sh.top and sh.height:
+                    max_bottom = FOOTER_TOP - 40_000
+                    if sh.top + sh.height > max_bottom:
+                        sh.height = max_bottom - sh.top
+            except Exception:
+                pass
             tf = sh.text_frame
             tf.clear()
+            tf.word_wrap = True
             rows = [
-                ("TEAM DETAILS  ·  GOOGLE CLOUD AI BUILDER CUP 2026  ·  JAPAC  ·  SUSTAINABILITY", 9, True, BRAND),
-                ("", 3, False, MUTED),
-                ("Team: Agent Ram     Leader: Ramasamy P     Product: TerraSentinel AI", 13, True, INK),
-                ("", 3, False, MUTED),
-                (
-                    "WINNING LINE: Satellites leave 1,355 moving points. The engine ranks the few that matter. "
-                    "Gemini writes the inspection ticket — every number checked against tools.",
-                    11,
-                    True,
-                    BRAND,
-                ),
-                ("", 3, False, MUTED),
-                (
-                    "Problem: After each Sentinel-1 pass, operators get thousands of InSAR points with no "
-                    "consequence ranking and no “who goes today”. Rain alarms and chatbots either false-fire "
-                    "or invent millimetres and failure dates.",
-                    10,
-                    False,
-                    INK,
-                ),
-                (
-                    "Solution: 250 m sites · RPI (hazard×consequence×confidence) · honest ETA bands "
-                    "(never failure dates) · Gemini number guard · live on Cloud Run + BigQuery.",
-                    10,
-                    False,
-                    INK,
-                ),
-                (
-                    "Live: https://terrasentinel-598899050820.asia-southeast1.run.app  ·  credentials on login page",
-                    10,
-                    True,
-                    BRAND,
-                ),
+                ("TEAM DETAILS  ·  AI BUILDER CUP 2026  ·  JAPAC  ·  SUSTAINABILITY", 10, True, BRAND),
+                ("", 6, False, MUTED),
+                ("Team: Agent Ram   ·   Leader: Ramasamy P   ·   Product: TerraSentinel AI", 13, True, INK),
+                ("", 8, False, MUTED),
+                ("Satellites leave 1,355 moving points. The engine ranks the few that matter.", 12, True, BRAND),
+                ("Gemini writes the ticket — every number checked. Live on Cloud Run + BigQuery.", 12, True, BRAND),
+                ("", 8, False, MUTED),
+                ("Problem: InSAR portals give points, not who goes today. Chatbots invent mm.", 11, False, INK),
+                ("Solution: 250 m sites · RPI · honest ETA bands · Gemini number guard.", 11, False, INK),
             ]
             for i, (t, size, bold, color) in enumerate(rows):
                 p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-                p.space_after = Pt(2)
+                p.space_after = Pt(3)
                 run = p.add_run()
                 run.text = t
                 run.font.size = Pt(size)
@@ -293,7 +279,7 @@ def s01_team(slide):
 
 
 def s02_cover(slide):
-    """Winning cover: story + proof + hero map (light panel over dark template)."""
+    """Strong left story + hero map. No 5-step row."""
     for sh in slide.shapes:
         if sh.has_text_frame and sh.top and 800_000 < sh.top < 4_000_000:
             try:
@@ -305,58 +291,40 @@ def s02_cover(slide):
     panel_h = FOOTER_TOP - panel_y - 20_000
     card(slide, MARGIN_X, panel_y, CONTENT_W, panel_h, WHITE, LINE, BRAND)
 
-    left_w = int(CONTENT_W * 0.48)
-    right_x = MARGIN_X + left_w + 60_000
-    right_w = CONTENT_W - left_w - 60_000 - 40_000
+    left_w = int(CONTENT_W * 0.46)
+    right_x = MARGIN_X + left_w + 80_000
+    right_w = CONTENT_W - left_w - 80_000 - 40_000
+    pad = 90_000
 
-    text(slide, MARGIN_X + 90_000, panel_y + 50_000, left_w - 100_000, 780_000, [
-        ("TERRASENTINEL AI  ·  SUSTAINABILITY", 9, True, BRAND),
-        ("Satellites see the ground move.", 15, True, INK),
-        ("Gemini tells engineers where to go first.", 13, True, BRAND),
-        ("", 3, False, MUTED),
-        ("Each pass → ranked Act list → honest threshold band → verified ticket.", 10, False, MUTED),
+    # Headline only — no overlapping body line
+    text(slide, MARGIN_X + pad, panel_y + 80_000, left_w - 2 * pad, 700_000, [
+        ("TERRASENTINEL AI", 10, True, BRAND),
+        ("Satellites see the ground move.", 17, True, INK),
+        ("Gemini tells engineers where to go first.", 14, True, BRAND),
     ])
 
-    # Proof chips — leave clear gap under headline (no overlap)
+    # Three stacked proof cards — clear gap under headline
     proofs = [
-        ("62k→4", "obs → Act today"),
-        ("RPI 86", "NH-58 CRITICAL"),
-        ("6 tools", "7 nums verified"),
+        ("62,330 → 4", "Observations → Act-today sites", BRAND),
+        ("RPI 86 · CRITICAL", "NH-58 · outlook 35–64 days if trend continues", BAD),
+        ("Gemini · verified", "6 tool calls · 7 numbers checked · 24h dispatch", BRAND),
     ]
-    py = panel_y + 980_000
-    pw = (left_w - 100_000 - 2 * 40_000) // 3
-    ph = 640_000
-    for i, (a, b) in enumerate(proofs):
-        x = MARGIN_X + 90_000 + i * (pw + 40_000)
-        card(slide, x, py, pw, ph, SOFT, LINE, BRAND)
-        text(slide, x + 25_000, py + 50_000, pw - 45_000, ph - 80_000, [
-            (a, 13, True, BRAND),
-            (b, 8, False, MUTED),
-        ], align=PP_ALIGN.CENTER)
+    stack_top = panel_y + 1_050_000
+    stack_h = panel_y + panel_h - stack_top - 100_000
+    gap_s = 60_000
+    ph = (stack_h - 2 * gap_s) // 3
+    for i, (big, small, accent) in enumerate(proofs):
+        y = stack_top + i * (ph + gap_s)
+        card(slide, MARGIN_X + pad, y, left_w - 2 * pad, ph, SOFT if i != 1 else BAD_BG, LINE, accent)
+        text(slide, MARGIN_X + pad + 70_000, y + 55_000, left_w - 2 * pad - 120_000, ph - 90_000, [
+            (big, 15, True, accent),
+            (small, 10, False, INK),
+        ])
 
-    flow = [("1 Pass", "Sentinel-1"), ("2 Map", "250 m sites"), ("3 Rank", "RPI"), ("4 Guard", "Gemini"), ("5 Act", "Crew")]
-    fy = py + ph + 60_000
-    fh = panel_y + panel_h - fy - 80_000
-    fw = (left_w - 100_000 - 4 * 30_000) // 5
-    for i, (a, b) in enumerate(flow):
-        x = MARGIN_X + 90_000 + i * (fw + 30_000)
-        card(slide, x, fy, fw, fh, PANEL, LINE, BRAND)
-        text(slide, x + 12_000, fy + 40_000, fw - 24_000, fh - 60_000, [
-            (a, 9, True, BRAND),
-            (b, 8, False, INK),
-        ], align=PP_ALIGN.CENTER)
-
-    # Right: hero map
+    # Right: full-height hero map
     hero = SHOTS / "c-hero-map.png"
     if hero.exists():
-        img_top = panel_y + 80_000
-        img_h = panel_h - 900_000
-        pic(slide, hero, right_x, img_top, right_w, img_h)
-        card(slide, right_x, img_top + img_h + 40_000, right_w, 700_000, BAD_BG, LINE, BAD)
-        text(slide, right_x + 50_000, img_top + img_h + 80_000, right_w - 80_000, 600_000, [
-            ("LIVE PROOF · NH-58 KM 3.25–3.50", 9, True, BAD),
-            ("6.2 mm/mo · 2× baseline · outlook 35–64 days if trend continues — not a failure date.", 9, False, INK),
-        ])
+        pic(slide, hero, right_x, panel_y + 80_000, right_w, panel_h - 160_000)
 
 
 def s03_idea(slide):
@@ -801,40 +769,8 @@ def s15_engine(slide):
 
 
 def s16_thanks(slide):
-    card(slide, MARGIN_X, CONTENT_TOP, CONTENT_W, CONTENT_H, WHITE, LINE, BRAND)
-    logo = SHOTS / "logo-mark.jpg"
-    if logo.exists():
-        pic(slide, logo, MARGIN_X + 100_000, CONTENT_TOP + 80_000, 420_000, 420_000)
-    text(slide, MARGIN_X + 600_000, CONTENT_TOP + 100_000, CONTENT_W - 760_000, 400_000, [
-        ("TerraSentinel AI", 20, True, BRAND),
-        ("Thank you — Team Agent Ram", 14, True, INK),
-    ])
-    text(slide, MARGIN_X + 100_000, CONTENT_TOP + 580_000, CONTENT_W - 200_000, 900_000, [
-        ("Which 250 metres should an engineer inspect today?", 14, True, INK),
-        ("The engine ranks them. Gemini writes the ticket. Every number is checked.", 11, False, MUTED),
-        ("", 6, False, MUTED),
-        ("62,330 obs → 7 action sites · RPI 86 worked end-to-end · Gemini 6 tools / 7 numbers verified", 10, True, BRAND),
-    ])
-    # Three proof cards
-    proofs = [
-        ("Live", "Cloud Run + BigQuery\ncredentials on login"),
-        ("Honest", "Bands ≠ failure dates\nGenAI never invents mm"),
-        ("GCP", "Run · BQ · Vertex\nSecrets · GCS · ADC"),
-    ]
-    pw = (CONTENT_W - 200_000 - 2 * GAP) // 3
-    py = CONTENT_TOP + 1_700_000
-    ph = 900_000
-    for i, (a, b) in enumerate(proofs):
-        x = MARGIN_X + 100_000 + i * (pw + GAP)
-        card(slide, x, py, pw, ph, SOFT, LINE, BRAND)
-        text(slide, x + 50_000, py + 60_000, pw - 80_000, ph - 100_000, [
-            (a, 14, True, BRAND),
-            (b, 10, False, INK),
-        ], align=PP_ALIGN.CENTER)
-    text(slide, MARGIN_X + 100_000, py + ph + 60_000, CONTENT_W - 200_000, 500_000, [
-        ("Ramasamy P  ·  ramp21052000@gmail.com  ·  +91 90250 32130", 11, False, BRAND),
-        ("Google Cloud AI Builder Cup 2026 · JAPAC · Sustainability", 10, False, MUTED),
-    ])
+    """Leave the official Builder Cup end slide untouched."""
+    return
 
 
 def export_pdf(pptx: Path, pdf: Path) -> bool:
